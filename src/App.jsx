@@ -1,15 +1,33 @@
-import React from 'react';
-import { UserDetails, HomePage, LoginPage } from './containers';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
+
+import { UserDetails, HomePage, LoginPage, RegisterPage } from './containers';
+import { Navbar, GlobalStyle } from './components';
+import 'antd/dist/antd.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
+      <GlobalStyle />
+      <Navbar
+        isAuthenticated={isAuthenticated}
+        logouthandler={() => setIsAuthenticated(false)}
+      />
       <Routes>
-        <Route path="/" element={<LoginPage />}>
-          <Route path="user_details" element={<UserDetails />} />
-          <Route path="home_page" element={<HomePage />} />
-        </Route>
+        <Route
+          path="/login"
+          element={<LoginPage loginHandler={() => setIsAuthenticated(true)} />}
+        />
+        <Route path="/register" element={<RegisterPage />}></Route>
+        <Route path="/home" element={<HomePage />}></Route>
       </Routes>
     </BrowserRouter>
   );

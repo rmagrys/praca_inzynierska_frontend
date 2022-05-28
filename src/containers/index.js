@@ -1,5 +1,6 @@
 import HomePage from './HomePage/HomePage';
-import UserDetails from './UserDetails/UserDetails';
+import UserDetailsPage from './UserDetailsPage/UserDetailsPage';
 import LoginPage from './LoginPage/LoginPage';
+import RegisterPage from './RegisterPage/RegisterPage';
 
-export { HomePage, UserDetails, LoginPage };
+export { HomePage, UserDetailsPage, LoginPage, RegisterPage };
