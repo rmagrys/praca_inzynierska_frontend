@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SearchDetails, SortSelect } from './components';
+
 import { Typography } from 'antd';
 
 const StyledPageHeader = styled.div`
@@ -25,17 +25,14 @@ const StyledPageHeader = styled.div`
   }
 `;
 
-const HomePageHeader = () => {
+const SummaryHeader = () => {
   return (
     <StyledPageHeader>
-      <SearchDetails />
       <Typography.Title level={3} style={{ margin: 0 }}>
-        {' '}
-        Strona Główna
+        Podsumowanie
       </Typography.Title>
-      <SortSelect />
     </StyledPageHeader>
   );
 };
 
-export default HomePageHeader;
+export default SummaryHeader;

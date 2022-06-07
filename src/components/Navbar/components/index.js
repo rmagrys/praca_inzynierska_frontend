@@ -6,6 +6,7 @@ import SearchBar from './SearchBar';
 import Logo from './Logo';
 import Navigation from './Navigation';
 import Logout from './Logout';
+import AuctionTypeSelector from './AuctionTypeSelector';
 
 export {
   Mail,
@@ -16,4 +17,5 @@ export {
   Logo,
   Navigation,
   Logout,
+  AuctionTypeSelector,
 };

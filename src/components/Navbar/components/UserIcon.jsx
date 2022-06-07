@@ -24,7 +24,7 @@ const StyledUserOutlined = styled(UserOutlined)`
 
 const UserIcon = () => {
   return (
-    <StyledUserCircleWrapper>
+    <StyledUserCircleWrapper onClick={() => (window.location.href = '/user')}>
       <StyledUserOutlined />
     </StyledUserCircleWrapper>
   );

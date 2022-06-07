@@ -12,8 +12,8 @@ const StyledPageHeader = styled.div`
   flex-basis: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-around;
 
+  justify-content: space-around;
   @media screen and (max-width: 600px) {
     flex-flow: column wrap;
     > .ant-typography {
@@ -28,10 +28,9 @@ const StyledPageHeader = styled.div`
 const HomePageHeader = () => {
   return (
     <StyledPageHeader>
-      <SearchDetails />
       <Typography.Title level={3} style={{ margin: 0 }}>
         {' '}
-        Strona Główna
+        Twoje oferty
       </Typography.Title>
       <SortSelect />
     </StyledPageHeader>

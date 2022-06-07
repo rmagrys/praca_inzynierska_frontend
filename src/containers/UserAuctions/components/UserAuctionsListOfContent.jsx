@@ -38,7 +38,7 @@ const IconText = ({ icon, text }) => (
   </Space>
 );
 
-const HomePageListOfContent = () => {
+const UserAuctionListOfContent = () => {
   return (
     <StyledListOfContentWrapper>
       <List
@@ -86,4 +86,4 @@ const HomePageListOfContent = () => {
   );
 };
 
-export default HomePageListOfContent;
+export default UserAuctionListOfContent;

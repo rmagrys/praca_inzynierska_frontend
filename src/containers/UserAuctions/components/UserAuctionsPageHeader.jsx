@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SearchDetails, SortSelect } from './components';
+
 import { Typography } from 'antd';
+
+import { SortSelect } from './components';
 
 const StyledPageHeader = styled.div`
   margin: 40px 20px;
@@ -12,8 +14,8 @@ const StyledPageHeader = styled.div`
   flex-basis: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-around;
 
+  justify-content: space-around;
   @media screen and (max-width: 600px) {
     flex-flow: column wrap;
     > .ant-typography {
@@ -25,17 +27,15 @@ const StyledPageHeader = styled.div`
   }
 `;
 
-const HomePageHeader = () => {
+const UserAuctionsPageHeader = () => {
   return (
     <StyledPageHeader>
-      <SearchDetails />
       <Typography.Title level={3} style={{ margin: 0 }}>
-        {' '}
-        Strona Główna
+        Twoje Przedmioty
       </Typography.Title>
       <SortSelect />
     </StyledPageHeader>
   );
 };
 
-export default HomePageHeader;
+export default UserAuctionsPageHeader;

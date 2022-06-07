@@ -4,10 +4,6 @@ import { Link } from 'react-router-dom';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-
 const StyledLoginWrapper = styled.div`
   margin: 40px 20px;
   height: 40vh;

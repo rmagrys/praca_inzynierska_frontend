@@ -39,7 +39,7 @@ const NavBarBottomSection = styled.div`
   background-color: var(--ghostWhite);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  flex-basis: 100%;
   top: 0;
   right: 0;
   left: 0;
@@ -64,17 +64,13 @@ const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 1200px;
+  flex-basis: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  ${(props) =>
-    props.right &&
-    css`
-      justify-content: flex-end;
-    `}
 `;
 
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = () => {
+  const isAuthenticated = !!localStorage.getItem('token');
   return (
     <>
       <NavBarTopSection>
@@ -103,7 +99,7 @@ const Navbar = ({ isAuthenticated }) => {
             </ContentWrapper>
           </NavBarMiddleSection>
           <NavBarBottomSection>
-            <ContentWrapper right>
+            <ContentWrapper>
               <Navigation />
             </ContentWrapper>
           </NavBarBottomSection>

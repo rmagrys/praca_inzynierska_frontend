@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Typography, Divider } from 'antd';
-
-import { getAllCategories } from '../../../api/categories';
 
 const StyledDivider = styled(Divider)`
   margin: 15px 0;
@@ -35,13 +33,21 @@ const StyledListItem = styled.li`
   }
 `;
 
-const HomePageSidebar = () => {
-  const [categories, setCategories] = useState([]);
+const categories = [
+  { id: 1, name: 'Elektronika' },
+  { id: 2, name: 'Moda' },
+  { id: 3, name: 'Dom i Ogród' },
+  { id: 4, name: 'SuperMarket' },
+  { id: 5, name: 'Dziecko' },
+  { id: 6, name: 'Uroda' },
+  { id: 7, name: 'Zdrowie' },
+  { id: 8, name: 'Kultura i rozrywka' },
+  { id: 9, name: 'Motoryzacja' },
+  { id: 10, name: 'Nieruchomości' },
+  { id: 11, name: 'Nagie fotki Kubicy' },
+];
 
-  useEffect(() => {
-    getAllCategories().then((res) => setCategories(res.data));
-  }, []);
-
+const UserAuctionsSidebar = () => {
   return (
     <StyledHomePageSideBar>
       <Typography.Title
@@ -63,4 +69,4 @@ const HomePageSidebar = () => {
   );
 };
 
-export default HomePageSidebar;
+export default UserAuctionsSidebar;

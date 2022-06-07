@@ -1,14 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { AuctionTypeSelector } from '../components';
+
+const StyledWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-basis: 100%;
+  max-width: 1200px;
+`;
+
 const StyledList = styled.ul`
   list-style-type: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
-  align-items: space-between;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const StyledListItem = styled.li`
@@ -27,13 +37,26 @@ const StyledListItem = styled.li`
 
 const Navigation = () => {
   return (
-    <StyledList>
-      <StyledListItem>Zakupy</StyledListItem>
-      <StyledListItem>Strona Główna</StyledListItem>
-      <StyledListItem>Polubione</StyledListItem>
-      <StyledListItem>Moje Towary</StyledListItem>
-      <StyledListItem>Podsumowania</StyledListItem>
-    </StyledList>
+    <StyledWrapper>
+      <AuctionTypeSelector />
+      <StyledList>
+        <StyledListItem onClick={() => (window.location.href = '/add-auction')}>
+          Dodaj przedmiot
+        </StyledListItem>
+        <StyledListItem onClick={() => (window.location.href = '/home')}>
+          Strona Główna
+        </StyledListItem>
+        <StyledListItem onClick={() => (window.location.href = '/my-bids')}>
+          Moje Oferty
+        </StyledListItem>
+        <StyledListItem onClick={() => (window.location.href = '/my-auctions')}>
+          Moje Przedmioty
+        </StyledListItem>
+        <StyledListItem onClick={() => (window.location.href = '/summary')}>
+          Podsumowania
+        </StyledListItem>
+      </StyledList>
+    </StyledWrapper>
   );
 };
 
