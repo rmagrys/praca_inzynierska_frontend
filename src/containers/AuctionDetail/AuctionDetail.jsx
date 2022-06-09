@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { css } from 'styled-components';
 import { ImagesPart, RightMenuSection } from './components';
+import { useParams } from 'react-router-dom';
+import { Spin } from 'antd';
+
+import { getAuctionById } from '../../api/auction';
 
 const StyledPageContainer = styled.div`
   max-width: 1200px;
@@ -15,15 +19,46 @@ const StyledContentContainer = styled.div`
   justify-content: space-between;
 `;
 
+const StyledSpinner = styled(Spin)`
+  ${({ spinning }) => css`
+    position: fixed;
+    transform: translate(0, 50vh);
+  `}
+`;
+
 const AuctionDetail = () => {
   const [auctionType, setAuctionType] = useState('default');
+  const [auction, setAuction] = useState(null);
+  const [isFetching, setIsFetching] = useState(true);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    getAuctionById(id).then((auction) => {
+      setAuctionType(auction.data.auctionType);
+      setAuction(auction.data);
+      setIsFetching(false);
+    });
+  }, [id]);
+
+  useEffect(() => {
+    console.log(auction);
+  }, [auction]);
+
+  useEffect(() => {
+    console.log(auctionType);
+  }, [auctionType]);
 
   return (
     <StyledPageContainer>
-      <StyledContentContainer>
-        <ImagesPart />
-        <RightMenuSection />
-      </StyledContentContainer>
+      <StyledSpinner size="large" spinning={isFetching} tip="Ładowanie...">
+        <StyledContentContainer>
+          {auction && <ImagesPart />}
+          {auction && (
+            <RightMenuSection auction={auction} auctionType={auctionType} />
+          )}
+        </StyledContentContainer>
+      </StyledSpinner>
     </StyledPageContainer>
   );
 };

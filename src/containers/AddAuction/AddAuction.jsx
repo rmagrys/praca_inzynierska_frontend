@@ -21,15 +21,17 @@ const StyledContentContainer = styled.div`
 
 const AddAuction = () => {
   const [auctionType, setAuctionType] = useState('default');
+  const [imagesUrls, setImagesUrls] = useState([]);
   const [form] = Form.useForm();
 
   const addItem = async () => {
     const { description, name, completionDate, startingPrice, ...rest } =
       await form.validateFields();
-    delete rest.files;
     const body = {
+      imagesUrls: imagesUrls,
       price: startingPrice,
-      completionDate: completionDate.format('YYYY-MM-DD HH:mm:ss'),
+      completionDate:
+        completionDate && completionDate.format('YYYY-MM-DD HH:mm:ss'),
       ...rest,
       product: {
         description,
@@ -38,16 +40,19 @@ const AddAuction = () => {
     };
     console.log(body);
 
-    const response = await addNewAuction(1, body);
+    // const response = await addNewAuction(1, body);
 
-    console.log(response);
+    //  console.log(response);
   };
 
   return (
     <StyledPageContainer>
       <Form form={form} onValuesChange={(values, all) => console.log(all)}>
         <StyledContentContainer>
-          <AuctionItemForm auctionType={auctionType} />
+          <AuctionItemForm
+            auctionType={auctionType}
+            setImagesUrls={setImagesUrls}
+          />
           <AuctionType
             setAuction={setAuctionType}
             auctionType={auctionType}

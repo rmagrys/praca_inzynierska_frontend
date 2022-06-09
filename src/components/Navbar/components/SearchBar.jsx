@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Input } from 'antd';
+import { Input, Form } from 'antd';
 
 const StyledInput = styled(Input.Search)`
   max-width: 40rem;
@@ -20,8 +20,17 @@ const StyledInput = styled(Input.Search)`
   }
 `;
 
-const SearchBar = () => {
-  return <StyledInput size="large" placeholder="Szukaj..." />;
+const SearchBar = ({ handleSearch }) => {
+  return (
+    <Form.Item noStyle name="search">
+      <StyledInput
+        size="large"
+        placeholder="Szukaj..."
+        onPressEnter={() => handleSearch()}
+        onSearch={() => handleSearch()}
+      />
+    </Form.Item>
+  );
 };
 
 export default SearchBar;

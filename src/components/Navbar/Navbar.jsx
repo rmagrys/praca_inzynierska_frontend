@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import {
   Mail,
@@ -69,7 +68,7 @@ const ContentWrapper = styled.div`
   margin: 0 auto;
 `;
 
-const Navbar = () => {
+const Navbar = ({ handleSearch }) => {
   const isAuthenticated = !!localStorage.getItem('token');
   return (
     <>
@@ -91,7 +90,7 @@ const Navbar = () => {
           <NavBarMiddleSection>
             <ContentWrapper>
               <Logo />
-              <SearchBar />
+              <SearchBar handleSearch={handleSearch} />
               <RightSide>
                 <UserIcon />
                 <ShoppingCartIcon />

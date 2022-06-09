@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Form } from 'antd';
 import {
   HomePageHeader,
   HomePageSidebar,
@@ -20,13 +21,34 @@ const StyledContentContainer = styled.div`
   justify-content: space-between;
 `;
 
-function HomePage({ isAuthenticated }) {
+function HomePage({ isAuthenticated, searchContext }) {
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [itemCount, setItemCount] = useState(null);
+  const [sortType, setSortType] = useState(null);
+
+  useEffect(() => {
+    console.log(sortType);
+  }, [sortType]);
+
   return (
     <StyledPageContainer>
-      <HomePageHeader />
+      <HomePageHeader
+        searchContext={searchContext}
+        itemCount={itemCount}
+        setSortType={setSortType}
+      />
       <StyledContentContainer>
-        <HomePageSidebar />
-        <HomePageListOfContent />
+        <HomePageSidebar
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+        />
+        <HomePageListOfContent
+          sortType={sortType}
+          itemCount={itemCount}
+          setItemCount={setItemCount}
+          activeCategory={activeCategory}
+          searchContext={searchContext}
+        />
       </StyledContentContainer>
     </StyledPageContainer>
   );

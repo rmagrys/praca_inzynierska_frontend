@@ -8,6 +8,13 @@ export const getAllAuctions = async () => {
   return axios.get('/auction');
 };
 
-export const getAuction = async (auctionId) => {
+export const getAuctionById = async (auctionId) => {
   return axios.get(`/auction/${auctionId}`);
+};
+
+export const getAllAuctionsByCategoryIdAndQuery = async (
+  categoryId,
+  query = 'default'
+) => {
+  return axios.get(`/auction/category-id/${categoryId}?auction-type=${query}`);
 };

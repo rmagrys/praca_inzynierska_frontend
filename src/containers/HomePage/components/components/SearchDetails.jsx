@@ -17,7 +17,7 @@ const StyledDivider = styled(Divider)`
   margin: 2px 0;
 `;
 
-const SearchDetails = () => {
+const SearchDetails = ({ itemCount }) => {
   return (
     <StyledDetailsWrapper>
       <Typography.Title
@@ -26,7 +26,7 @@ const SearchDetails = () => {
           margin: 0,
         }}
       >
-        Wyszukiwanie dla Licytacji
+        Wyniki wyszukiwania
       </Typography.Title>
       <StyledDivider />
       <Paragraph
@@ -34,7 +34,7 @@ const SearchDetails = () => {
           margin: 0,
         }}
       >
-        Znaleziono wyników: 8
+        Znaleziono wyników: {itemCount}
       </Paragraph>
     </StyledDetailsWrapper>
   );

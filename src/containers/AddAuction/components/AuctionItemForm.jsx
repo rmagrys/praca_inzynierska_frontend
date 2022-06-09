@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   Typography,
@@ -13,6 +13,8 @@ import {
 } from 'antd';
 
 import { Uploader } from '../components';
+import { S3config } from '../../../config';
+import { getAllCategories } from '../../../api/categories';
 
 const { Option } = Select;
 
@@ -53,9 +55,6 @@ const StyledWrapper = styled.div`
   margin: 40px 20px;
   background-color: var(--ghostWhite);
   box-shadow: rgb(43 52 69 / 10%) 0px 4px 16px;
-  /* display: flex;
-  justify-content: flex-start;
-  flex-flow: row wrap; */
   border-radius: 10px;
   flex-basis: 60%;
 
@@ -72,29 +71,20 @@ const StyledWrapper = styled.div`
   }
 `;
 
-const categories = [
-  { id: 1, name: 'Elektronika' },
-  { id: 2, name: 'Moda' },
-  { id: 3, name: 'Dom i Ogród' },
-  { id: 4, name: 'SuperMarket' },
-  { id: 5, name: 'Dziecko' },
-  { id: 6, name: 'Uroda' },
-  { id: 7, name: 'Zdrowie' },
-  { id: 8, name: 'Kultura i rozrywka' },
-  { id: 9, name: 'Motoryzacja' },
-  { id: 10, name: 'Nieruchomości' },
-  { id: 11, name: 'Nagie fotki Kubicy' },
-];
-
-const AuctionItemForm = ({ auctionType }) => {
+const AuctionItemForm = ({ auctionType, setImagesUrls }) => {
+  const [categories, setCategories] = useState([]);
   const isAuctionType = (type) => auctionType === type;
+
+  useEffect(() => {
+    getAllCategories().then((res) => setCategories(res.data));
+  }, []);
 
   return (
     <StyledWrapper>
       <Typography.Title level={3}>Dodaj zdjęcia:</Typography.Title>
-      <Form.Item style={{ display: 'block' }} name="files">
-        <Uploader />
-      </Form.Item>
+      <div>
+        <Uploader setImagesUrls={setImagesUrls} />
+      </div>
 
       <div>
         <StyledDivider />

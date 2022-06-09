@@ -47,7 +47,14 @@ const StyledDesription = styled.span`
 `;
 
 const auction = {
-  author: 'Robert Kubica',
+  product: {
+    name: 'Hotdog z orlenu',
+    description: 'Hotdog z możliwością wyboru wielu rodzajów sosów',
+  },
+  seller: {
+    firstName: 'Robert',
+    lastName: 'Kubica',
+  },
   price: 86.22,
   count: 123,
   completionDate: new Date('12/31/2022 23:59:59'),
@@ -56,11 +63,6 @@ const auction = {
   priceDrop: 8,
   auctionType: 'descending-auction',
   minimumPrice: 10,
-};
-
-const product = {
-  name: 'Hotdog z orlenu',
-  description: 'Hotdog z możliwością wyboru wielu rodzajów sosów',
 };
 
 const bid = {
@@ -72,10 +74,11 @@ const bidder = {
   name: 'Valteri Bottas',
 };
 
-const RightMenuSection = () => {
+const RightMenuSection = ({ auction, auctionType }) => {
+  console.log(auction);
   const [counter, setCounter] = useState(auction.price);
   const [price, setPrice] = useState(null);
-  const isAuctionType = (type) => auction.auctionType === type;
+  const isAuctionType = (type) => auctionType === type;
 
   const calculateDescDateAndPrice = () => {
     const now = new Date();
@@ -105,9 +108,11 @@ const RightMenuSection = () => {
   return (
     <StyledWrapper>
       <StyledContentWrapper>
-        <Typography.Title level={4}>{auction.author}</Typography.Title>
+        <Typography.Title level={4}>
+          {auction.seller.firstName} {auction.seller.lastName}
+        </Typography.Title>
         <StyledDivider />
-        <Typography.Title level={4}>{product.name}</Typography.Title>
+        <Typography.Title level={4}>{auction.product.name}</Typography.Title>
 
         {isAuctionType('default') && (
           <>
@@ -152,7 +157,7 @@ const RightMenuSection = () => {
             <Typography.Title level={5}>
               Do zakończenia aukcji zostało
             </Typography.Title>
-            <Countdown finishDate={auction.completionDate} />
+            <Countdown finishDate={new Date(auction.completionDate)} />
             <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
             <Input addonAfter="PLN" value={bid.bidValue + 1} />
             <StyledButtonsWrapper>
@@ -168,7 +173,7 @@ const RightMenuSection = () => {
             <Typography.Title level={5}>
               Do zakończenia aukcji zostało
             </Typography.Title>
-            <Countdown finishDate={auction.completionDate} />
+            <Countdown finishDate={new Date(auction.completionDate)} />
             <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
             <Input addonAfter="PLN" value={0} />
             <StyledButtonsWrapper>
@@ -202,7 +207,7 @@ const RightMenuSection = () => {
           </>
         )}
         <Typography.Title level={5}>Opis</Typography.Title>
-        <StyledDesription>{product.description}</StyledDesription>
+        <StyledDesription>{auction.product.description}</StyledDesription>
       </StyledContentWrapper>
     </StyledWrapper>
   );

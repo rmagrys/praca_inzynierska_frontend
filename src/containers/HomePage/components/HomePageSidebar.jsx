@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Typography, Divider } from 'antd';
 
 import { getAllCategories } from '../../../api/categories';
@@ -9,7 +9,7 @@ const StyledDivider = styled(Divider)`
 `;
 
 const StyledHomePageSideBar = styled.div`
-  margin: 40px 20px;
+  margin: 20px;
   background-color: var(--ghostWhite);
   box-shadow: rgb(43 52 69 / 10%) 0px 4px 16px;
   border-radius: 10px;
@@ -22,6 +22,9 @@ const StyledList = styled.ul`
   margin: 0;
   display: flex;
   flex-flow: row wrap;
+  &:last-child {
+    margin-bottom: 20px;
+  }
 `;
 
 const StyledListItem = styled.li`
@@ -33,9 +36,14 @@ const StyledListItem = styled.li`
     cursor: pointer;
     color: var(--cerise);
   }
+  ${(props) =>
+    props.active &&
+    css`
+      color: var(--cerise);
+    `}
 `;
 
-const HomePageSidebar = () => {
+const HomePageSidebar = ({ activeCategory, setActiveCategory }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -56,7 +64,13 @@ const HomePageSidebar = () => {
       </Typography.Title>
       <StyledList>
         {categories.map((category) => (
-          <StyledListItem key={category.id}>{category.name}</StyledListItem>
+          <StyledListItem
+            onClick={() => setActiveCategory(category.id)}
+            active={category.id === activeCategory}
+            key={category.id}
+          >
+            {category.name}
+          </StyledListItem>
         ))}
       </StyledList>
     </StyledHomePageSideBar>
