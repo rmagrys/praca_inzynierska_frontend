@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
+import { getAuthToken } from '../../../api/auth';
+
 const StyledLoginWrapper = styled.div`
   margin: 40px 20px;
   height: 40vh;
@@ -30,10 +32,15 @@ const StyledLoginWrapper = styled.div`
 `;
 
 const LoginForm = () => {
-  const onFinish = (values) => {
-    console.log('Success:', values);
-    localStorage.setItem('token', 'lul');
-    window.location.href = '/home';
+  const onFinish = async (values) => {
+    try {
+      const body = { email: values.username, password: values.password };
+      const token = await getAuthToken(body);
+      localStorage.setItem('token', token);
+      window.location.href = '/home';
+    } catch (error) {
+      console.log('something went wrong');
+    }
   };
 
   return (

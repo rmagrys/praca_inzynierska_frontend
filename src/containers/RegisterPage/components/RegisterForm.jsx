@@ -3,6 +3,9 @@ import styled from 'styled-components';
 
 import { Button, Form, Input, Select, PageHeader } from 'antd';
 
+import { addNewUser } from '../../../api/user';
+import { getAuthToken } from '../../../api/auth';
+
 const StyledRegisterWrapper = styled.div`
   margin: 40px 20px;
   height: 60vh;
@@ -57,7 +60,30 @@ const tailFormItemLayout = {
 const RegisterForm = () => {
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
+    const { prefix, confirm, phone, ...rest } = values;
+    const body = {
+      password: confirm,
+      phone: `${prefix}${phone}`,
+      ...rest,
+    };
+
+    try {
+      const response = await addNewUser(body);
+
+      if (response.status === 201) {
+        const loginBody = {
+          email: rest.email,
+          password: rest.password,
+        };
+        const token = await getAuthToken(loginBody);
+        localStorage.setItem('token', token);
+        window.location.href = '/home';
+      }
+    } catch (error) {
+      console.log('something went wrong');
+    }
+
     console.log('Received values of form: ', values);
   };
 
@@ -154,6 +180,34 @@ const RegisterForm = () => {
             {
               required: true,
               message: 'Proszę wprowadź swoją nazwę użytkownika!',
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="firstName"
+          label="Imię"
+          rules={[
+            {
+              required: true,
+              message: 'Proszę wprowadź swoje imię!',
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="lastName"
+          label="Nazwisko"
+          rules={[
+            {
+              required: true,
+              message: 'Proszę wprowadź swoje nazwisko!',
               whitespace: true,
             },
           ]}
