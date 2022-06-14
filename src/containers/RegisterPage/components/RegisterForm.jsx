@@ -83,8 +83,6 @@ const RegisterForm = () => {
     } catch (error) {
       console.log('something went wrong');
     }
-
-    console.log('Received values of form: ', values);
   };
 
   const prefixSelector = (
