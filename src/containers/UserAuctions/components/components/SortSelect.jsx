@@ -1,10 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Select } from 'antd';
-import { Typography } from 'antd';
-
-const { Paragraph } = Typography;
-
+import { Select, Form } from 'antd';
 const { Option } = Select;
 
 const StyledSortSelectWrapper = styled.div`
@@ -22,23 +18,26 @@ const SortSelect = () => {
   return (
     <StyledSortSelectWrapper>
       <StyledSpan>Sortuj Po</StyledSpan>
-      <Select
-        showSearch
-        style={{
-          width: 200,
-        }}
-        placeholder="Wybierz"
-        optionFilterProp="children"
-        filterOption={(input, option) => option.children.includes(input)}
-        filterSort={(optionA, optionB) =>
-          optionA.children
-            .toLowerCase()
-            .localeCompare(optionB.children.toLowerCase())
-        }
-      >
-        <Option value="1">Cenie</Option>
-        <Option value="2">Dacie</Option>
-      </Select>
+      <Form.Item name="sort" noStyle>
+        <Select
+          showSearch
+          style={{
+            width: 200,
+          }}
+          placeholder="Wybierz"
+          optionFilterProp="children"
+          filterOption={(input, option) => option.children.includes(input)}
+          filterSort={(optionA, optionB) =>
+            optionA.children
+              .toLowerCase()
+              .localeCompare(optionB.children.toLowerCase())
+          }
+        >
+          <Option value="price_asc">Cenie rosnąco</Option>
+          <Option value="price_desc">Cenie malejąco</Option>
+          <Option value="date">Dacie</Option>
+        </Select>
+      </Form.Item>
     </StyledSortSelectWrapper>
   );
 };

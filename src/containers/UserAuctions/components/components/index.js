@@ -1,3 +1,3 @@
-import SortSelect from './SortSelect';
+import SortSelect from './SortSelect.jsx';
 
 export { SortSelect };

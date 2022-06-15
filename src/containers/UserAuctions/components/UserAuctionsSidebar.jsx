@@ -1,6 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { css } from 'styled-components';
 import { Typography, Divider } from 'antd';
+
+import { getAllCategories } from '../../../api/categories';
 
 const StyledDivider = styled(Divider)`
   margin: 15px 0;
@@ -31,23 +33,19 @@ const StyledListItem = styled.li`
     cursor: pointer;
     color: var(--cerise);
   }
+  ${(props) =>
+    props.active &&
+    css`
+      color: var(--cerise);
+    `}
 `;
 
-const categories = [
-  { id: 1, name: 'Elektronika' },
-  { id: 2, name: 'Moda' },
-  { id: 3, name: 'Dom i Ogród' },
-  { id: 4, name: 'SuperMarket' },
-  { id: 5, name: 'Dziecko' },
-  { id: 6, name: 'Uroda' },
-  { id: 7, name: 'Zdrowie' },
-  { id: 8, name: 'Kultura i rozrywka' },
-  { id: 9, name: 'Motoryzacja' },
-  { id: 10, name: 'Nieruchomości' },
-  { id: 11, name: 'Nagie fotki Kubicy' },
-];
+const UserAuctionsSidebar = ({ activeCategory, setActiveCategory }) => {
+  const [categories, setCategories] = useState([]);
 
-const UserAuctionsSidebar = () => {
+  useEffect(() => {
+    getAllCategories().then((res) => setCategories(res.data));
+  }, []);
   return (
     <StyledHomePageSideBar>
       <Typography.Title
@@ -62,7 +60,13 @@ const UserAuctionsSidebar = () => {
       </Typography.Title>
       <StyledList>
         {categories.map((category) => (
-          <StyledListItem key={category.id}>{category.name}</StyledListItem>
+          <StyledListItem
+            active={category.id === activeCategory}
+            onClick={() => setActiveCategory(category.id)}
+            key={category.id}
+          >
+            {category.name}
+          </StyledListItem>
         ))}
       </StyledList>
     </StyledHomePageSideBar>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   UserAuctionsPageHeader,
@@ -19,13 +19,22 @@ const StyledContentContainer = styled.div`
   justify-content: space-between;
 `;
 
-function UserAuctions() {
+function UserAuctions({ searchContext }) {
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [sortType, setSortType] = useState(null);
   return (
     <StyledPageContainer>
-      <UserAuctionsPageHeader />
+      <UserAuctionsPageHeader setSortType={setSortType} />
       <StyledContentContainer>
-        <UserAuctionsSidebar />
-        <UserAuctionsListOfContent />
+        <UserAuctionsSidebar
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+        />
+        <UserAuctionsListOfContent
+          sortType={sortType}
+          activeCategory={activeCategory}
+          searchContext={searchContext}
+        />
       </StyledContentContainer>
     </StyledPageContainer>
   );

@@ -25,7 +25,7 @@ const StyledPageHeader = styled.div`
   }
 `;
 
-const HomePageHeader = ({ itemCount, searchContext, setSortType }) => {
+const HomePageHeader = ({ itemCount, setSortType }) => {
   const [form] = Form.useForm();
   return (
     <StyledPageHeader>

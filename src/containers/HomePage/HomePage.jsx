@@ -21,14 +21,10 @@ const StyledContentContainer = styled.div`
   justify-content: space-between;
 `;
 
-function HomePage({ isAuthenticated, searchContext }) {
+function HomePage({ searchContext }) {
   const [activeCategory, setActiveCategory] = useState(null);
   const [itemCount, setItemCount] = useState(null);
   const [sortType, setSortType] = useState(null);
-
-  useEffect(() => {
-    console.log(sortType);
-  }, [sortType]);
 
   return (
     <StyledPageContainer>

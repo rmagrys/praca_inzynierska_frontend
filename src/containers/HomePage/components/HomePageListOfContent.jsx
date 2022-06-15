@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { Avatar, List, Space, Typography, Spin, Empty } from 'antd';
-import {
-  StarOutlined,
-  LikeOutlined,
-  MessageOutlined,
-  DashboardOutlined,
-  TagOutlined,
-} from '@ant-design/icons';
+import { DashboardOutlined, TagOutlined } from '@ant-design/icons';
 
 import { S3config } from '../../../config';
 import { Countdown } from '../../../components';
@@ -16,8 +10,6 @@ import {
   getAllAuctions,
   getAllAuctionsByCategoryIdAndQuery,
 } from '../../../api/auction';
-
-const defaultHref = `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqR6Ap_L-a5EsSeDCIPggUn1Tz-j0jI2tBvKITwqMfRv5tZuzCs3tT-QXnwgzz4h6Iq_k&usqp=CAU`;
 
 const StyledListOfContentWrapper = styled.div`
   margin: 20px;
@@ -73,7 +65,7 @@ const HomePageListOfContent = ({
           href: `/details/${auction.id}`,
           imgHref: auction.pictures.length
             ? `${S3config.AWS_S3_PATH}${auction.pictures[0].url}`
-            : defaultHref,
+            : S3config.DEFAULT_PICTURE,
           price: auction.price,
           description: (
             <strong>
@@ -128,10 +120,6 @@ const HomePageListOfContent = ({
         break;
     }
   }, [sortType]);
-
-  useEffect(() => {
-    console.log(auctions);
-  }, [auctions]);
 
   const auctionFilter = (data) => {
     let filteredData;

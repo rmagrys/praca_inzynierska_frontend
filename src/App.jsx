@@ -67,11 +67,19 @@ function App() {
         />
         <Route
           path="/my-auctions"
-          element={<PrivateRoute element={<UserAuctions />} />}
+          element={
+            <PrivateRoute
+              element={<UserAuctions searchContext={searchContext} />}
+            />
+          }
         />
         <Route
           path="/my-bids"
-          element={<PrivateRoute element={<UserBids />} />}
+          element={
+            <PrivateRoute
+              element={<UserBids searchContext={searchContext} />}
+            />
+          }
         />
         <Route
           path="/summary"

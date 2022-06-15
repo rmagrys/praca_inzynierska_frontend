@@ -36,7 +36,7 @@ const LoginForm = () => {
     try {
       const body = { email: values.username, password: values.password };
       const token = await getAuthToken(body);
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', token.data);
       window.location.href = '/home';
     } catch (error) {
       console.log('something went wrong');
