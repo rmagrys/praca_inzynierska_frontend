@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Radio, Typography, Button, Form, Divider, Input } from 'antd';
 
 import { Countdown } from '../components';
+import { parseJwt } from '../../../api/jwt';
 const { Paragraph } = Typography;
 
 const StyledWrapper = styled.div`
@@ -74,11 +75,47 @@ const bidder = {
   name: 'Valteri Bottas',
 };
 
+const mapAuctionTypeToName = (auctionType) => {
+  switch (auctionType) {
+    case `default`:
+      return 'Zwykła aukcja';
+
+    case `default-auction`:
+      return 'Zwykła licytacja';
+
+    case `blind-auction`:
+      return 'Licytacja w ciemno';
+
+    case `descending-auction`:
+      return 'Malejąca aukcja';
+
+    default:
+      return new Error('Unused value');
+  }
+};
+
 const RightMenuSection = ({ auction, auctionType }) => {
   console.log(auction);
   const [counter, setCounter] = useState(auction.price);
+  const [highestBid, setHighestBid] = useState(
+    auction.bids.sort((a, b) => b.value - a.value)[0]
+  );
   const [price, setPrice] = useState(null);
+
+  const token = localStorage.getItem('token');
+  const { user } = parseJwt(token);
+
+  const isLoggedUserWithHighestBid = highestBid
+    ? +user === +highestBid.buyer.id
+    : false;
+  const isLoggedUserAuctionOwner = auction.seller
+    ? +user === +auction.seller.id
+    : false;
   const isAuctionType = (type) => auctionType === type;
+
+  useEffect(() => {
+    console.log(isLoggedUserAuctionOwner);
+  }, [user, auction]);
 
   const calculateDescDateAndPrice = () => {
     const now = new Date();
@@ -108,7 +145,10 @@ const RightMenuSection = ({ auction, auctionType }) => {
   return (
     <StyledWrapper>
       <StyledContentWrapper>
-        <Typography.Title level={4}>
+        <Typography.Title level={5} style={{ marginBottom: '5px' }}>
+          {mapAuctionTypeToName(auctionType)} użytkownika:
+        </Typography.Title>
+        <Typography.Title level={4} style={{ marginTop: '5px' }}>
           {auction.seller.firstName} {auction.seller.lastName}
         </Typography.Title>
         <StyledDivider />
@@ -116,69 +156,136 @@ const RightMenuSection = ({ auction, auctionType }) => {
 
         {isAuctionType('default') && (
           <>
-            <Typography.Title level={1}>{price}</Typography.Title>
-            <Paragraph style={{ marginBottom: 0 }}>Liczba sztuk</Paragraph>
-            <Button
-              disabled={counter < 2}
-              onClick={() => setCounter((prev) => (prev > 1 ? prev - 1 : 1))}
-            >
-              -
-            </Button>
-            <StyledInput
-              value={counter}
-              onChange={({ target }) =>
-                setCounter(
-                  target.value > auction.count ? auction.count : target.value
-                )
-              }
-            />
-
-            <Button
-              disabled={counter >= auction.count}
-              onClick={() => setCounter((prev) => prev + 1)}
-            >
-              +
-            </Button>
-            <StyledMaxItemCount>Z sztuk : {auction.count}</StyledMaxItemCount>
-            <StyledButtonsWrapper>
-              <StyledButton type="primary">DODAJ DO KOSZYKA</StyledButton>
-            </StyledButtonsWrapper>
-            <StyledDivider />
+            <Typography.Title level={5}>Cena</Typography.Title>
+            <Typography.Title level={1} style={{ marginTop: '19px' }}>
+              {auction.price} PLN
+            </Typography.Title>
+            <Typography.Title level={5}>
+              Do zakończenia aukcji zostało
+            </Typography.Title>
+            <Countdown finishDate={new Date(auction.completionDate)} />
+            {!isLoggedUserAuctionOwner && (
+              <>
+                <Paragraph style={{ marginBottom: 0 }}>Liczba sztuk</Paragraph>
+                <Button
+                  disabled={counter < 2}
+                  onClick={() =>
+                    setCounter((prev) => (prev > 1 ? prev - 1 : 1))
+                  }
+                >
+                  -
+                </Button>
+                <StyledInput
+                  value={counter}
+                  onChange={({ target }) =>
+                    setCounter(
+                      target.value > auction.count
+                        ? auction.count
+                        : target.value
+                    )
+                  }
+                />
+                <Button
+                  disabled={counter >= auction.count}
+                  onClick={() => setCounter((prev) => prev + 1)}
+                >
+                  +
+                </Button>
+                <StyledMaxItemCount>
+                  Z sztuk : {auction.count}
+                </StyledMaxItemCount>
+                <StyledButtonsWrapper>
+                  <StyledButton type="primary">DODAJ DO KOSZYKA</StyledButton>
+                </StyledButtonsWrapper>
+                <StyledDivider />
+              </>
+            )}
           </>
         )}
 
         {isAuctionType('default-auction') && (
           <>
-            <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
-            <Paragraph style={{ marginBottom: 0 }}>Od: {bidder.name}</Paragraph>
+            {auction.bids.length ? (
+              <>
+                <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
+                <Paragraph style={{ marginBottom: 0 }}>
+                  {isLoggedUserWithHighestBid ? (
+                    'Ciebie'
+                  ) : (
+                    <>
+                      Od: {highestBid.buyer.firstName}{' '}
+                      {highestBid.buyer.lastName}}
+                    </>
+                  )}
+                </Paragraph>
+                <Typography.Title style={{ marginTop: '19px' }} level={1}>
+                  {bid.bidValue} PLN
+                </Typography.Title>
+              </>
+            ) : (
+              'Brak ofert'
+            )}
+
+            <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
             <Typography.Title style={{ marginTop: '19px' }} level={1}>
-              {bid.bidValue} PLN
+              {auction.price} PLN
             </Typography.Title>
+
             <Typography.Title level={5}>
               Do zakończenia aukcji zostało
             </Typography.Title>
             <Countdown finishDate={new Date(auction.completionDate)} />
-            <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
-            <Input addonAfter="PLN" value={bid.bidValue + 1} />
-            <StyledButtonsWrapper>
-              <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
-            </StyledButtonsWrapper>
+            {!isLoggedUserAuctionOwner && (
+              <>
+                <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
+                <Input
+                  addonAfter="PLN"
+                  value={bid.bidValue + auction.jumpToNextRise}
+                />
+                <StyledButtonsWrapper>
+                  <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
+                </StyledButtonsWrapper>
+              </>
+            )}
           </>
         )}
 
         {isAuctionType('blind-auction') && (
           <>
-            <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
-            <Paragraph style={{ marginBottom: 0 }}>Od: {bidder.name}</Paragraph>
+            {auction.bids.length ? (
+              <>
+                <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
+                <Paragraph style={{ marginBottom: 0 }}>
+                  {isLoggedUserWithHighestBid ? (
+                    ' Od: Ciebie'
+                  ) : (
+                    <>
+                      Od: {highestBid.buyer.firstName}{' '}
+                      {highestBid.buyer.lastName}}
+                    </>
+                  )}
+                </Paragraph>
+              </>
+            ) : (
+              'Brak ofert'
+            )}
+            <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
+            <Typography.Title style={{ marginTop: '19px' }} level={1}>
+              {auction.price} PLN
+            </Typography.Title>
             <Typography.Title level={5}>
               Do zakończenia aukcji zostało
             </Typography.Title>
             <Countdown finishDate={new Date(auction.completionDate)} />
-            <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
-            <Input addonAfter="PLN" value={0} />
-            <StyledButtonsWrapper>
-              <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
-            </StyledButtonsWrapper>
+            {!isLoggedUserAuctionOwner && (
+              <>
+                <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
+                <Input addonAfter="PLN" value={0} />
+                <StyledButtonsWrapper>
+                  <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
+                </StyledButtonsWrapper>
+              </>
+            )}
           </>
         )}
 
@@ -201,9 +308,13 @@ const RightMenuSection = ({ auction, auctionType }) => {
                 <Countdown finishDate={calculateDescDateAndPrice()} />
               </>
             )}
-            <StyledButtonsWrapper>
-              <StyledButton type="primary">KUP TERAZ</StyledButton>
-            </StyledButtonsWrapper>
+            {!isLoggedUserAuctionOwner && (
+              <>
+                <StyledButtonsWrapper>
+                  <StyledButton type="primary">KUP TERAZ</StyledButton>
+                </StyledButtonsWrapper>
+              </>
+            )}
           </>
         )}
         <Typography.Title level={5}>Opis</Typography.Title>

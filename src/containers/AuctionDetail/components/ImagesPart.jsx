@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Typography, Image } from 'antd';
 
+import { S3config } from '../../../config';
+
 const StyledWrapper = styled.div`
   margin: 40px 20px;
   background-color: var(--ghostWhite);
@@ -33,11 +35,8 @@ const RestImagesWrapper = styled.div`
   flex-basis: 25%;
 `;
 
-const StyledImage = styled(Image)`
-  margin: 10px;
-`;
-
-const ImagesPart = () => {
+const ImagesPart = ({ pictures }) => {
+  const [first, ...rest] = pictures;
   return (
     <StyledWrapper>
       <Typography.Title level={3} style={{ margin: '20px' }}>
@@ -48,31 +47,21 @@ const ImagesPart = () => {
           <MainImageWrapper>
             <Image
               width={500}
-              src="https://wspieramypolske.orlen.pl/img/layer/kubica.png"
+              src={
+                first
+                  ? `${S3config.AWS_S3_PATH}${first.url}`
+                  : S3config.DEFAULT_PICTURE
+              }
             />
           </MainImageWrapper>
           <RestImagesWrapper>
             <Image.PreviewGroup>
-              <Image
-                width={100}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
-              <Image
-                width={100}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
-              <Image
-                width={100}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
-              <Image
-                width={100}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
-              <Image
-                width={100}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
+              {rest.map((image) => (
+                <Image
+                  width={100}
+                  src={`${S3config.AWS_S3_PATH}${image.url}`}
+                />
+              ))}
             </Image.PreviewGroup>
           </RestImagesWrapper>
         </StyledImageWrapper>

@@ -62,7 +62,11 @@ const UserAuctionsSidebar = ({ activeCategory, setActiveCategory }) => {
         {categories.map((category) => (
           <StyledListItem
             active={category.id === activeCategory}
-            onClick={() => setActiveCategory(category.id)}
+            onClick={() =>
+              setActiveCategory((prev) =>
+                prev === category.id ? null : category.id
+              )
+            }
             key={category.id}
           >
             {category.name}

@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Avatar, List, Space } from 'antd';
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons';
+import { Avatar, List, Space, Typography } from 'antd';
+import {
+  DashboardOutlined,
+  TagOutlined,
+  MessageOutlined,
+} from '@ant-design/icons';
+
+import {
+  getAllUserBids,
+  getAllUserBidsByCategoryWithIncludables,
+} from '../../../api/bid';
+import { S3config } from '../../../config';
+import { parseJwt } from '../../../api/jwt';
+import { Countdown } from '../../../components';
 
 const imgHrefs = [
   'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c3VuZ2xhc3Nlc3xlbnwwfHwwfHw%3D&w=1000&q=80',
@@ -31,52 +43,149 @@ const StyledListOfContentWrapper = styled.div`
   flex-basis: 70%;
 `;
 
-const IconText = ({ icon, text }) => (
+const IconText = ({ icon, text, component }) => (
   <Space>
     {React.createElement(icon)}
     {text}
+    {component}
   </Space>
 );
 
-const HomePageListOfContent = () => {
+const HomePageListOfContent = ({ activeCategory, searchContext, sortType }) => {
+  const [bids, setBids] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
+
+  const bidsUpdater = (res) => {
+    console.log(res.data);
+    if (res.data.length) {
+      setBids(
+        res.data.map((bid, index) => {
+          console.log(`${S3config.AWS_S3_PATH}${bid.auction.pictures[0].url}`);
+          return {
+            sortIndex: index,
+            title: bid.auction.product.name,
+            href: `/details/${bid.auction.id}`,
+            imgHref: bid.auction.pictures.length
+              ? `${S3config.AWS_S3_PATH}${bid.auction.pictures[0].url}`
+              : S3config.DEFAULT_PICTURE,
+            price: bid.auction.price,
+            description: (
+              <strong>
+                {/* {bid.auction.seller.firstName} {bid.auction.seller.lastName}{' '} */}
+                auction
+              </strong>
+            ),
+            content: (
+              <div>
+                Twoja oferta
+                <Typography.Title level={2}>{bid.value} PLN</Typography.Title>
+                {bid.auction.product.description}
+              </div>
+            ),
+            finishDate: new Date(bid.auction.completionDate),
+          };
+        })
+      );
+      setIsFetching(false);
+    } else {
+      setBids([]);
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    switch (sortType) {
+      case `date`:
+        setBids((prev) => [
+          ...prev
+            .sort((a, b) => (a.finishDate > b.finishDate ? 1 : -1))
+            .map((a, sortIndex) => ({ ...a, sortIndex })),
+        ]);
+        break;
+
+      case `price_desc`:
+        setBids((prev) => [
+          ...prev
+            .sort((a, b) => (a.price < b.price ? 1 : -1))
+            .map((a, sortIndex) => ({ ...a, sortIndex })),
+        ]);
+        break;
+
+      case `price_asc`:
+        setBids((prev) => [
+          ...prev
+            .sort((a, b) => (a.price > b.price ? 1 : -1))
+            .map((a, sortIndex) => ({ ...a, sortIndex })),
+        ]);
+        break;
+      default:
+        break;
+    }
+  }, [sortType]);
+
+  const bidsFilter = (data) => {
+    let filteredData;
+    if (searchContext.search) {
+      filteredData = data.filter((bid) =>
+        bid.auction.title.includes(searchContext.search)
+      );
+    } else {
+      filteredData = bids;
+    }
+
+    return filteredData;
+  };
+
+  useEffect(() => {
+    setIsFetching(true);
+    const token = localStorage.getItem('token');
+    const { user } = parseJwt(token);
+    activeCategory
+      ? getAllUserBidsByCategoryWithIncludables(
+          user,
+          activeCategory,
+          searchContext.auctionType
+        ).then(bidsUpdater)
+      : getAllUserBids(user, activeCategory).then(bidsUpdater);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchContext.auctionType, activeCategory]);
+
+  useEffect(() => {
+    console.log(sortType);
+    console.log(bids);
+    console.log(searchContext.auctionType);
+    console.log(activeCategory);
+  }, [bids, sortType, searchContext.auctionType, activeCategory]);
+
   return (
     <StyledListOfContentWrapper>
       <List
+        loading={isFetching}
         itemLayout="vertical"
         size="large"
-        pagination={{
-          onChange: (page) => {
-            console.log(page);
-          },
-          pageSize: 10,
-        }}
-        dataSource={data}
+        pagination={{ pageSize: 10 }}
+        dataSource={bidsFilter(bids)}
         renderItem={(item, i) => (
           <List.Item
-            key={item.title}
+            key={item.sortIndex}
             actions={[
               <IconText
-                icon={StarOutlined}
-                text="156"
+                icon={TagOutlined}
+                text={item.bids}
                 key="list-vertical-star-o"
               />,
               <IconText
-                icon={LikeOutlined}
-                text="156"
-                key="list-vertical-like-o"
-              />,
-              <IconText
-                icon={MessageOutlined}
-                text="2"
+                icon={DashboardOutlined}
+                component={<Countdown small finishDate={item.finishDate} />}
                 key="list-vertical-message"
               />,
             ]}
-            extra={<img width={272} alt="logo" src={imgHrefs[i]} />}
+            extra={<img width={272} alt="logo" src={item.imgHref} />}
           >
             <List.Item.Meta
-              // avatar={<Avatar src={item.avatar} />}
+              avatar={<Avatar src={item.avatar} />}
               title={<a href={item.href}>{item.title}</a>}
-              //description={item.description}
+              description={item.description}
             />
             {item.content}
           </List.Item>

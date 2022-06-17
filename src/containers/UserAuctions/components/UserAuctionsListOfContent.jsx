@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Avatar, List, Space, Typography } from 'antd';
-import {
-  DashboardOutlined,
-  TagOutlined,
-  MessageOutlined,
-} from '@ant-design/icons';
+import { DashboardOutlined, TagOutlined } from '@ant-design/icons';
 
 import { S3config } from '../../../config';
 import { Countdown } from '../../../components';
@@ -24,10 +20,11 @@ const StyledListOfContentWrapper = styled.div`
   flex-basis: 70%;
 `;
 
-const IconText = ({ icon, text }) => (
+const IconText = ({ icon, text, component }) => (
   <Space>
     {React.createElement(icon)}
     {text}
+    {component}
   </Space>
 );
 
@@ -121,12 +118,20 @@ const UserAuctionListOfContent = ({
     const { user } = parseJwt(token);
     activeCategory
       ? getAllUserAuctionsByCategoryIdAndQuery(
+          user,
           activeCategory,
           searchContext.auctionType
         ).then(auctionUpdater)
-      : getAllUserAuctions(user, activeCategory).then(auctionUpdater);
+      : getAllUserAuctions(user).then(auctionUpdater);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchContext.auctionType, activeCategory]);
+
+  useEffect(() => {
+    console.log(sortType);
+    console.log(auctions);
+    console.log(searchContext.auctionType);
+    console.log(activeCategory);
+  }, [auctions, sortType, searchContext.auctionType, activeCategory]);
 
   return (
     <StyledListOfContentWrapper>

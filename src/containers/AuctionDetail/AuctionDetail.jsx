@@ -53,7 +53,7 @@ const AuctionDetail = () => {
     <StyledPageContainer>
       <StyledSpinner size="large" spinning={isFetching} tip="Ładowanie...">
         <StyledContentContainer>
-          {auction && <ImagesPart />}
+          {auction && <ImagesPart pictures={auction.pictures} />}
           {auction && (
             <RightMenuSection auction={auction} auctionType={auctionType} />
           )}

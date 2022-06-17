@@ -19,11 +19,12 @@ const StyledSingleValueWrapper = styled.div`
   margin-right: 5px;
 `;
 
-const Countdown = ({ finishDate, small }) => {
+const Countdown = ({ finishDate }) => {
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [diff, setDiff] = useState(0);
 
   useEffect(() => {
     const target = finishDate;
@@ -31,6 +32,7 @@ const Countdown = ({ finishDate, small }) => {
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
+      setDiff(difference);
 
       const d = Math.floor(difference / (1000 * 60 * 60 * 24));
       setDays(d);
@@ -51,22 +53,28 @@ const Countdown = ({ finishDate, small }) => {
 
   return (
     <StyledCoundownContainer>
-      <StyledSingleValueWrapper>
-        <span>D:</span>
-        <span>{days}</span>
-      </StyledSingleValueWrapper>
-      <StyledSingleValueWrapper>
-        <span>G:</span>
-        <span>{hours}</span>
-      </StyledSingleValueWrapper>
-      <StyledSingleValueWrapper>
-        <span>M:</span>
-        <span>{minutes}</span>
-      </StyledSingleValueWrapper>
-      <StyledSingleValueWrapper>
-        <span>S:</span>
-        <span>{seconds}</span>
-      </StyledSingleValueWrapper>
+      {diff > 0 ? (
+        <>
+          <StyledSingleValueWrapper>
+            <span>D:</span>
+            <span>{days}</span>
+          </StyledSingleValueWrapper>
+          <StyledSingleValueWrapper>
+            <span>G:</span>
+            <span>{hours}</span>
+          </StyledSingleValueWrapper>
+          <StyledSingleValueWrapper>
+            <span>M:</span>
+            <span>{minutes}</span>
+          </StyledSingleValueWrapper>
+          <StyledSingleValueWrapper>
+            <span>S:</span>
+            <span>{seconds}</span>
+          </StyledSingleValueWrapper>
+        </>
+      ) : (
+        <span>Aucja zakończona</span>
+      )}
     </StyledCoundownContainer>
   );
 };

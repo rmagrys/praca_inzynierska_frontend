@@ -65,7 +65,11 @@ const HomePageSidebar = ({ activeCategory, setActiveCategory }) => {
       <StyledList>
         {categories.map((category) => (
           <StyledListItem
-            onClick={() => setActiveCategory(category.id)}
+            onClick={() =>
+              setActiveCategory((prev) =>
+                prev === category.id ? null : category.id
+              )
+            }
             active={category.id === activeCategory}
             key={category.id}
           >

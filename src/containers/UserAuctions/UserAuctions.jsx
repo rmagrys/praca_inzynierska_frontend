@@ -22,6 +22,7 @@ const StyledContentContainer = styled.div`
 function UserAuctions({ searchContext }) {
   const [activeCategory, setActiveCategory] = useState(null);
   const [sortType, setSortType] = useState(null);
+
   return (
     <StyledPageContainer>
       <UserAuctionsPageHeader setSortType={setSortType} />

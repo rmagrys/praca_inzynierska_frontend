@@ -24,9 +24,11 @@ export const getAllUserAuctionsByCategoryIdAndQuery = async (
   categoryId,
   query = 'default'
 ) => {
-  return axios.get(`/auction/category-id/${categoryId}?auction-type=${query}`);
+  return axios.get(
+    `/auction/category/${categoryId}/user/${userId}?auction-type=${query}`
+  );
 };
 
-export const getAllUserAuctions = async (userId, categoryId) => {
-  return axios.get(`/auction/category/${categoryId}/user/${userId}`);
+export const getAllUserAuctions = async (userId) => {
+  return axios.get(`/auction/user/${userId}`);
 };

@@ -146,6 +146,13 @@ const HomePageListOfContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchContext.auctionType, activeCategory]);
 
+  useEffect(() => {
+    console.log(sortType);
+    console.log(auctions);
+    console.log(searchContext.auctionType);
+    console.log(activeCategory);
+  }, [auctions, sortType, searchContext.auctionType, activeCategory]);
+
   return (
     <StyledListOfContentWrapper>
       <List

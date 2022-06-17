@@ -5,6 +5,7 @@ import { Form } from 'antd';
 import { addNewAuction } from '../../api/auction';
 
 import { AuctionType, AuctionItemForm } from './components';
+import { parseJwt } from '../../api/jwt';
 
 const StyledPageContainer = styled.div`
   max-width: 1200px;
@@ -24,25 +25,47 @@ const AddAuction = () => {
   const [imagesUrls, setImagesUrls] = useState([]);
   const [form] = Form.useForm();
 
+  const calculateReducingTime = (reducingTime) => {
+    const stringArrayOfReducingTime = reducingTime
+      .format('HH:mm:ss')
+      .split(':');
+    return (
+      -(-stringArrayOfReducingTime[0]) * 3600 -
+      -stringArrayOfReducingTime[1] * 60 -
+      -stringArrayOfReducingTime[2]
+    );
+  };
+
   const addItem = async () => {
-    const { description, name, completionDate, startingPrice, ...rest } =
-      await form.validateFields();
+    const {
+      description,
+      name,
+      completionDate,
+      reducingTime,
+      startingPrice,
+      ...rest
+    } = await form.validateFields();
+
     const body = {
       imagesUrls: imagesUrls,
       price: startingPrice,
       completionDate:
         completionDate && completionDate.format('YYYY-MM-DD HH:mm:ss'),
+      reducingTime: reducingTime && calculateReducingTime(reducingTime),
       ...rest,
       product: {
         description,
         name,
       },
     };
+
     console.log(body);
 
-    // const response = await addNewAuction(1, body);
+    const { user } = parseJwt(localStorage.getItem('token'));
 
-    //  console.log(response);
+    const response = await addNewAuction(user, body);
+
+    console.log(response);
   };
 
   return (

@@ -29,6 +29,7 @@ const StyledPageHeader = styled.div`
 
 const UserAuctionsPageHeader = ({ searchContext, setSortType }) => {
   const [form] = Form.useForm();
+
   return (
     <StyledPageHeader>
       <Typography.Title level={3} style={{ margin: 0 }}>

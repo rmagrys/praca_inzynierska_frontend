@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   UserBidsHeader,
@@ -19,13 +19,23 @@ const StyledContentContainer = styled.div`
   justify-content: space-between;
 `;
 
-function UserBids() {
+function UserBids({ searchContext }) {
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [sortType, setSortType] = useState(null);
+
   return (
     <StyledPageContainer>
-      <UserBidsHeader />
+      <UserBidsHeader setSortType={setSortType} />
       <StyledContentContainer>
-        <UserBidsSidebar />
-        <UserBidsListOfContent />
+        <UserBidsSidebar
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+        />
+        <UserBidsListOfContent
+          sortType={sortType}
+          activeCategory={activeCategory}
+          searchContext={searchContext}
+        />
       </StyledContentContainer>
     </StyledPageContainer>
   );

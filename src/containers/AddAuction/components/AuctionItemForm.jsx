@@ -142,6 +142,13 @@ const AuctionItemForm = ({ auctionType, setImagesUrls }) => {
           </Form.Item>
           <Form.Item
             style={{ display: 'block' }}
+            name="priceDrop"
+            label="Wartość o jaką cena będzie maleć"
+          >
+            <StyledInputNumber addonAfter="PLN" />
+          </Form.Item>
+          <Form.Item
+            style={{ display: 'block' }}
             name="reducingTime"
             label="Czas do obniżenia ceny"
           >
@@ -150,15 +157,22 @@ const AuctionItemForm = ({ auctionType, setImagesUrls }) => {
         </>
       )}
 
-      {!isAuctionType('default') && (
+      {(isAuctionType('blind-auction') || isAuctionType('default-auction')) && (
         <Form.Item
           style={{ display: 'block' }}
-          name="completionDate"
-          label="Data zakończenia"
+          name="jumpToTheNextRaise"
+          label="Skok ceny do kolejnego przebicia"
         >
-          <StyledDatePicker format="YYYY-MM-D HH:m:s" />
+          <StyledInputNumber addonAfter="PLN" />
         </Form.Item>
       )}
+      <Form.Item
+        style={{ display: 'block' }}
+        name="completionDate"
+        label="Data zakończenia"
+      >
+        <StyledDatePicker format="YYYY-MM-D HH:m:s" />
+      </Form.Item>
     </StyledWrapper>
   );
 };
