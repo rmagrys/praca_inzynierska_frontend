@@ -166,36 +166,8 @@ const RightMenuSection = ({ auction, auctionType }) => {
             <Countdown finishDate={new Date(auction.completionDate)} />
             {!isLoggedUserAuctionOwner && (
               <>
-                <Paragraph style={{ marginBottom: 0 }}>Liczba sztuk</Paragraph>
-                <Button
-                  disabled={counter < 2}
-                  onClick={() =>
-                    setCounter((prev) => (prev > 1 ? prev - 1 : 1))
-                  }
-                >
-                  -
-                </Button>
-                <StyledInput
-                  value={counter}
-                  onChange={({ target }) =>
-                    setCounter(
-                      target.value > auction.count
-                        ? auction.count
-                        : target.value
-                    )
-                  }
-                />
-                <Button
-                  disabled={counter >= auction.count}
-                  onClick={() => setCounter((prev) => prev + 1)}
-                >
-                  +
-                </Button>
-                <StyledMaxItemCount>
-                  Z sztuk : {auction.count}
-                </StyledMaxItemCount>
                 <StyledButtonsWrapper>
-                  <StyledButton type="primary">DODAJ DO KOSZYKA</StyledButton>
+                  <StyledButton type="primary">Kup teraz</StyledButton>
                 </StyledButtonsWrapper>
                 <StyledDivider />
               </>

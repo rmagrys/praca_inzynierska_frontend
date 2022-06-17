@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, PageHeader, Checkbox } from 'antd';
+import { Form, Input, Button, PageHeader, Checkbox, notification } from 'antd';
 import { Link } from 'react-router-dom';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -35,9 +35,16 @@ const LoginForm = () => {
   const onFinish = async (values) => {
     try {
       const body = { email: values.username, password: values.password };
-      const token = await getAuthToken(body);
-      localStorage.setItem('token', token.data);
-      window.location.href = '/home';
+      const response = await getAuthToken(body);
+      if (response.data.httpCode >= 400) {
+        notification.error({
+          message: 'Nie można zalogować',
+          description: ` ${response.data.message}`,
+        });
+      } else {
+        localStorage.setItem('token', response.data);
+        window.location.href = '/home';
+      }
     } catch (error) {
       console.log('something went wrong');
     }

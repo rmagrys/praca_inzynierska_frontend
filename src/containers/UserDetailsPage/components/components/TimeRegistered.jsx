@@ -13,7 +13,7 @@ const StyledWrapper = styled.div`
   margin-right: 120px;
 `;
 
-const TimeRegistered = () => {
+const TimeRegistered = ({ createdAt }) => {
   return (
     <StyledWrapper>
       <Typography.Title
@@ -22,14 +22,14 @@ const TimeRegistered = () => {
           margin: 0,
         }}
       >
-        Jesteś z nami
+        Jesteś z nami od
       </Typography.Title>
       <Paragraph
         style={{
           margin: 0,
         }}
       >
-        6 lat 6 miesięcy 6 dni
+        {createdAt.substring(0, 10)}
       </Paragraph>
     </StyledWrapper>
   );

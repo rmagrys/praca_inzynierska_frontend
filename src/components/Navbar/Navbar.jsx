@@ -93,7 +93,6 @@ const Navbar = ({ handleSearch }) => {
               <SearchBar handleSearch={handleSearch} />
               <RightSide>
                 <UserIcon />
-                <ShoppingCartIcon />
               </RightSide>
             </ContentWrapper>
           </NavBarMiddleSection>

@@ -126,20 +126,17 @@ const UserAuctionListOfContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchContext.auctionType, activeCategory]);
 
-  useEffect(() => {
-    console.log(sortType);
-    console.log(auctions);
-    console.log(searchContext.auctionType);
-    console.log(activeCategory);
-  }, [auctions, sortType, searchContext.auctionType, activeCategory]);
-
   return (
     <StyledListOfContentWrapper>
       <List
         loading={isFetching}
         itemLayout="vertical"
         size="large"
-        pagination={{ pageSize: 10 }}
+        pagination={
+          auctions.length && {
+            pageSize: 10,
+          }
+        }
         dataSource={auctionFilter(auctions)}
         renderItem={(item, i) => (
           <List.Item

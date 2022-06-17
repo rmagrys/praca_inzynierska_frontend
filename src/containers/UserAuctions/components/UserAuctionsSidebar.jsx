@@ -33,6 +33,9 @@ const StyledListItem = styled.li`
     cursor: pointer;
     color: var(--cerise);
   }
+  &:last-child {
+    margin-bottom: 20px;
+  }
   ${(props) =>
     props.active &&
     css`

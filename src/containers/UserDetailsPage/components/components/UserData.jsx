@@ -13,26 +13,25 @@ const StyledWrapper = styled.div`
   margin-left: 120px;
 `;
 
-const UserData = () => {
+const UserData = ({ userData }) => {
   return (
     <StyledWrapper>
       <Typography.Title level={5}>Twoje Dane</Typography.Title>
       <Paragraph>
-        <strong>Nazwa użytkownika:</strong> user
+        <strong>Nazwa użytkownika:</strong> {userData && userData.nickname}
       </Paragraph>
       <Paragraph>
-        <strong>Imię:</strong> Rafał
+        <strong>Imię:</strong> {userData && userData.firstName}
       </Paragraph>
       <Paragraph>
-        <strong>Nazwisko:</strong> Magryś
+        <strong>Nazwisko:</strong> {userData && userData.lastName}
       </Paragraph>
       <Paragraph>
-        <strong>Telefon:</strong> 666 666 666
+        <strong>Telefon:</strong> {userData && userData.phone}
       </Paragraph>
       <Paragraph>
-        <strong>e-mail:</strong> example@example.com
+        <strong>e-mail:</strong> {userData && userData.email}
       </Paragraph>
-      <Button type="primary">Edytuj</Button>
     </StyledWrapper>
   );
 };

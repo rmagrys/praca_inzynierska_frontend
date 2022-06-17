@@ -22,12 +22,12 @@ const StyledUserDetailsHeader = styled.div`
   justify-content: space-between;
 `;
 
-const UserDetailsHeader = () => {
+const UserDetailsHeader = ({ userData }) => {
   return (
     <StyledUserDetailsHeader>
-      <WelcomeUser />
+      <WelcomeUser name={userData.firstName} />
       <StyledDivider type="vertical" />
-      <TimeRegistered />
+      <TimeRegistered createdAt={userData.createdAt} />
     </StyledUserDetailsHeader>
   );
 };

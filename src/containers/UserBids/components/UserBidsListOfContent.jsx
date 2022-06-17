@@ -163,7 +163,11 @@ const HomePageListOfContent = ({ activeCategory, searchContext, sortType }) => {
         loading={isFetching}
         itemLayout="vertical"
         size="large"
-        pagination={{ pageSize: 10 }}
+        pagination={
+          bids.length && {
+            pageSize: 10,
+          }
+        }
         dataSource={bidsFilter(bids)}
         renderItem={(item, i) => (
           <List.Item

@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { Button, Form, Input, Select, PageHeader } from 'antd';
+import { Button, Form, Input, Select, PageHeader, notification } from 'antd';
 
 import { addNewUser } from '../../../api/user';
 import { getAuthToken } from '../../../api/auth';
@@ -71,13 +72,18 @@ const RegisterForm = () => {
     try {
       const response = await addNewUser(body);
 
-      if (response.status === 201) {
+      if (response.data.httpCode >= 400) {
+        notification.error({
+          message: 'Nie można zarejestrować',
+          description: ` ${response.data.message}`,
+        });
+      } else {
         const loginBody = {
           email: rest.email,
           password: rest.password,
         };
         const token = await getAuthToken(loginBody);
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', token.body);
         window.location.href = '/home';
       }
     } catch (error) {
@@ -233,9 +239,14 @@ const RegisterForm = () => {
 
         <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">
-            Register
+            Zarejestruj
           </Button>
         </Form.Item>
+        <div className="ant-row ant-form-item" style={{ marginLeft: '30%' }}>
+          <span>
+            Lub <Link to="/login"> Zaloguj się teraz!</Link>
+          </span>
+        </div>
       </Form>
     </StyledRegisterWrapper>
   );

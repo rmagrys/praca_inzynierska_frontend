@@ -18,10 +18,10 @@ const StyledUserDetailsContent = styled.div`
   justify-content: space-between;
 `;
 
-const UserDetailsContent = () => {
+const UserDetailsContent = ({ userData }) => {
   return (
     <StyledUserDetailsContent>
-      <UserData />
+      <UserData userData={userData} />
     </StyledUserDetailsContent>
   );
 };

@@ -1,9 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Typography, Divider } from 'antd';
-
-const { Paragraph } = Typography;
+import { Typography } from 'antd';
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -13,11 +11,7 @@ const StyledWrapper = styled.div`
   margin-left: 120px;
 `;
 
-const StyledDivider = styled(Divider)`
-  margin: 12px 0;
-`;
-
-const WelcomeUser = () => {
+const WelcomeUser = ({ name }) => {
   return (
     <StyledWrapper>
       <Typography.Title
@@ -26,7 +20,7 @@ const WelcomeUser = () => {
           margin: 0,
         }}
       >
-        Witaj {`user.name`}
+        Witaj {name}
       </Typography.Title>
     </StyledWrapper>
   );
