@@ -19,12 +19,12 @@ const StyledSingleValueWrapper = styled.div`
   margin-right: 5px;
 `;
 
-const Countdown = ({ finishDate }) => {
+const Countdown = ({ finishDate, onFinish }) => {
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [diff, setDiff] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     const target = finishDate;
@@ -32,7 +32,6 @@ const Countdown = ({ finishDate }) => {
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
-      setDiff(difference);
 
       const d = Math.floor(difference / (1000 * 60 * 60 * 24));
       setDays(d);
@@ -47,13 +46,20 @@ const Countdown = ({ finishDate }) => {
 
       const s = Math.floor((difference % (1000 * 60)) / 1000);
       setSeconds(s);
+
+      if (d <= 0 && h <= 0 && m <= 0 && s <= 0) {
+        setFinished(true);
+        if (onFinish) {
+          onFinish();
+        }
+      }
     }, 1000);
     return () => clearInterval(interval);
   });
 
   return (
     <StyledCoundownContainer>
-      {diff > 0 ? (
+      {!finished ? (
         <>
           <StyledSingleValueWrapper>
             <span>D:</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Form } from 'antd';
+import { Form, notification } from 'antd';
 
 import { addNewAuction } from '../../api/auction';
 
@@ -64,6 +64,14 @@ const AddAuction = () => {
     const { user } = parseJwt(localStorage.getItem('token'));
 
     const response = await addNewAuction(user, body);
+
+    notification.success({
+      message: 'Pomyślnie dodano ofertę',
+    });
+
+    setTimeout(() => {
+      window.location.href = '/home';
+    }, 500);
 
     console.log(response);
   };

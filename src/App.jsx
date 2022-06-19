@@ -46,7 +46,7 @@ function App() {
         <Navbar handleSearch={handleSearch} />
       </Form>
       <Routes>
-        <Route exact path="/" element={<Navigate to="/home" />}></Route>
+        <Route exact path="/" element={<Navigate to="/home" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route

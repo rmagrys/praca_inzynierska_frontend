@@ -1,21 +1,19 @@
 import React from 'react';
 import { Image } from 'antd';
 import styled from 'styled-components';
+import { S3config } from '../../../config';
 
 const StyledImageWrapper = styled.div`
   img {
-    max-width: 200px;
-    max-height: 40px;
+    max-width: 400px;
+    max-height: 100px;
   }
 `;
 
 const Logo = () => {
   return (
     <StyledImageWrapper>
-      <img
-        src="https://www.wielkopolskiebazarek.pl/image/e-porady.png"
-        alt="null"
-      />
+      <img src={S3config.LOGO} alt="null" />
     </StyledImageWrapper>
   );
 };

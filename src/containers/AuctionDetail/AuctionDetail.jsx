@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import { ImagesPart, RightMenuSection } from './components';
+import { ImagesPart, RightMenuSection, InfoForSeller } from './components';
 import { useParams } from 'react-router-dom';
 import { Spin } from 'antd';
 
 import { getAuctionById } from '../../api/auction';
+import { parseJwt } from '../../api/jwt';
 
 const StyledPageContainer = styled.div`
   max-width: 1200px;
@@ -41,6 +42,18 @@ const AuctionDetail = () => {
     });
   }, [id]);
 
+  const token = localStorage.getItem('token');
+  const { user } = parseJwt(token);
+  const isLoggedUserAuctionOwner =
+    auction && auction.seller ? +user === +auction.seller.id : false;
+  const isAuctionFinished =
+    auction && new Date(auction.completionDate) < new Date();
+
+  const isAuctionPaid = auction && auction.payment ? true : false;
+
+  console.log('isLoggedUserAuctionOwner', isLoggedUserAuctionOwner);
+  console.log('isAuctionFinished', isAuctionFinished);
+
   useEffect(() => {
     console.log(auction);
   }, [auction]);
@@ -53,11 +66,20 @@ const AuctionDetail = () => {
     <StyledPageContainer>
       <StyledSpinner size="large" spinning={isFetching} tip="Ładowanie...">
         <StyledContentContainer>
-          {auction && <ImagesPart pictures={auction.pictures} />}
+          {auction && (
+            <ImagesPart
+              pictures={auction.pictures}
+              name={auction.product.name}
+            />
+          )}
           {auction && (
             <RightMenuSection auction={auction} auctionType={auctionType} />
           )}
         </StyledContentContainer>
+        {isLoggedUserAuctionOwner &&
+          isAuctionFinished &&
+          isAuctionPaid &&
+          auction && <InfoForSeller userData={auction.payment.buyer} />}
       </StyledSpinner>
     </StyledPageContainer>
   );

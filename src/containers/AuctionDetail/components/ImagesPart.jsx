@@ -35,12 +35,12 @@ const RestImagesWrapper = styled.div`
   flex-basis: 25%;
 `;
 
-const ImagesPart = ({ pictures }) => {
+const ImagesPart = ({ pictures, name }) => {
   const [first, ...rest] = pictures;
   return (
     <StyledWrapper>
       <Typography.Title level={3} style={{ margin: '20px' }}>
-        Hotdog z Orlenu
+        {name}
       </Typography.Title>
       <ContentWrapper>
         <StyledImageWrapper>

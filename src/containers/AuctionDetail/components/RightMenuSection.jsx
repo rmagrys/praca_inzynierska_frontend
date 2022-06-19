@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Radio, Typography, Button, Form, Divider, Input } from 'antd';
+import {
+  Radio,
+  Typography,
+  Button,
+  Form,
+  Divider,
+  Input,
+  notification,
+  Popconfirm,
+} from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { Countdown } from '../components';
 import { parseJwt } from '../../../api/jwt';
+import { addNewBidToAuction } from '../../../api/bid';
+import { addPaymentToAuction } from '../../../api/payment';
 const { Paragraph } = Typography;
 
 const StyledWrapper = styled.div`
@@ -31,49 +43,13 @@ const StyledDivider = styled(Divider)`
   margin-bottom: 0;
 `;
 
-const StyledInput = styled(Input)`
-  width: 50px;
-`;
-
 const StyledButtonsWrapper = styled.div`
   margin: 10px 0;
-`;
-
-const StyledMaxItemCount = styled.span`
-  margin-left: 10px;
 `;
 
 const StyledDesription = styled.span`
   word-wrap: break-word;
 `;
-
-const auction = {
-  product: {
-    name: 'Hotdog z orlenu',
-    description: 'Hotdog z możliwością wyboru wielu rodzajów sosów',
-  },
-  seller: {
-    firstName: 'Robert',
-    lastName: 'Kubica',
-  },
-  price: 86.22,
-  count: 123,
-  completionDate: new Date('12/31/2022 23:59:59'),
-  createdAt: new Date('1/1/2022 23:59:59'),
-  intervalTime: 31230000,
-  priceDrop: 8,
-  auctionType: 'descending-auction',
-  minimumPrice: 10,
-};
-
-const bid = {
-  bidderId: 123,
-  bidValue: 3123,
-};
-
-const bidder = {
-  name: 'Valteri Bottas',
-};
 
 const mapAuctionTypeToName = (auctionType) => {
   switch (auctionType) {
@@ -95,40 +71,91 @@ const mapAuctionTypeToName = (auctionType) => {
 };
 
 const RightMenuSection = ({ auction, auctionType }) => {
-  console.log(auction);
-  const [counter, setCounter] = useState(auction.price);
   const [highestBid, setHighestBid] = useState(
     auction.bids.sort((a, b) => b.value - a.value)[0]
   );
   const [price, setPrice] = useState(null);
+  const [descendingCountdownDate, setDescendingCountdownDate] = useState(
+    new Date()
+  );
+  const [isAuctionFinished, setIsAuctionFinished] = useState(
+    new Date(auction.completionDate) < new Date()
+  );
+  const [isAuctionPaid, setIsAuctionPaid] = useState(
+    auction.payment ? true : false
+  );
 
+  const [form] = Form.useForm();
   const token = localStorage.getItem('token');
   const { user } = parseJwt(token);
 
   const isLoggedUserWithHighestBid = highestBid
     ? +user === +highestBid.buyer.id
     : false;
+
   const isLoggedUserAuctionOwner = auction.seller
     ? +user === +auction.seller.id
     : false;
   const isAuctionType = (type) => auctionType === type;
 
-  useEffect(() => {
-    console.log(isLoggedUserAuctionOwner);
-  }, [user, auction]);
+  const handleAddNewBid = async () => {
+    try {
+      const data = await form.validateFields();
+      const body = {
+        value: Number(data.bid),
+        description: 'Bid',
+      };
+      const response = await addNewBidToAuction(user, auction.id, body);
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 500);
+      notification.success({
+        message: 'Pomyślnie dodano ofertę',
+      });
+    } catch (error) {
+      notification.error({
+        message: 'Nie można dodać oferty',
+        description: ` ${error.response.data.message}`,
+      });
+    }
+  };
+
+  const calculatePaymentValue = () => {
+    if (isAuctionType('descending-auction')) {
+      return price;
+    }
+
+    if (isAuctionType('default-auction') || isAuctionType('blind-auction')) {
+      return highestBid.value;
+    }
+
+    if (isAuctionType('default')) {
+      return auction.price;
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    try {
+      const body = {
+        value: calculatePaymentValue(),
+        description: 'Informacje dla sprzedawcy',
+      };
+      const response = await addPaymentToAuction(auction.id, user, body);
+      setIsAuctionPaid(true);
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 500);
+    } catch (error) {}
+  };
 
   const calculateDescDateAndPrice = () => {
     const now = new Date();
-    const createdAt = auction.createdAt.getTime();
-
-    const diff = now.getTime() - createdAt;
-    const timesPriceChanged = diff / auction.intervalTime;
+    const createdAt = new Date(auction.createdAt);
+    const diff = now.getTime() - createdAt.getTime();
+    const timesPriceChanged = diff / (auction.reducingTime * 1000);
     const timeToChangePrice = timesPriceChanged - Math.floor(timesPriceChanged);
-
-    console.log(timesPriceChanged);
-
     const calculatedPriceDrop =
-      auction.price - Math.floor(timesPriceChanged) * auction.priceDrop;
+      auction.price - Math.ceil(timesPriceChanged) * auction.priceDrop;
 
     const finalPrice =
       auction.minimumPrice > calculatedPriceDrop
@@ -139,8 +166,16 @@ const RightMenuSection = ({ auction, auctionType }) => {
       setPrice(finalPrice);
     }
 
-    return new Date(now.getTime() + auction.intervalTime * timeToChangePrice);
+    return new Date(
+      now.getTime() + auction.reducingTime * timeToChangePrice * 1000
+    );
   };
+
+  useEffect(() => {
+    if (isAuctionType('descending-auction')) {
+      setDescendingCountdownDate(calculateDescDateAndPrice());
+    }
+  }, [auctionType]);
 
   return (
     <StyledWrapper>
@@ -153,143 +188,284 @@ const RightMenuSection = ({ auction, auctionType }) => {
         </Typography.Title>
         <StyledDivider />
         <Typography.Title level={4}>{auction.product.name}</Typography.Title>
-
-        {isAuctionType('default') && (
-          <>
-            <Typography.Title level={5}>Cena</Typography.Title>
-            <Typography.Title level={1} style={{ marginTop: '19px' }}>
-              {auction.price} PLN
-            </Typography.Title>
-            <Typography.Title level={5}>
-              Do zakończenia aukcji zostało
-            </Typography.Title>
-            <Countdown finishDate={new Date(auction.completionDate)} />
-            {!isLoggedUserAuctionOwner && (
-              <>
-                <StyledButtonsWrapper>
-                  <StyledButton type="primary">Kup teraz</StyledButton>
-                </StyledButtonsWrapper>
-                <StyledDivider />
-              </>
-            )}
-          </>
-        )}
-
-        {isAuctionType('default-auction') && (
-          <>
-            {auction.bids.length ? (
-              <>
-                <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
-                <Paragraph style={{ marginBottom: 0 }}>
-                  {isLoggedUserWithHighestBid ? (
-                    'Ciebie'
-                  ) : (
-                    <>
-                      Od: {highestBid.buyer.firstName}{' '}
-                      {highestBid.buyer.lastName}}
-                    </>
-                  )}
-                </Paragraph>
-                <Typography.Title style={{ marginTop: '19px' }} level={1}>
-                  {bid.bidValue} PLN
+        <Form form={form}>
+          {isAuctionType('default') && (
+            <>
+              <Typography.Title level={5}>Cena</Typography.Title>
+              <Typography.Title level={1} style={{ marginTop: '19px' }}>
+                {auction.price} PLN
+              </Typography.Title>
+              {isAuctionFinished ? (
+                <Typography.Title level={5}>
+                  Aukcja została ukończona
                 </Typography.Title>
-              </>
-            ) : (
-              'Brak ofert'
-            )}
+              ) : (
+                <>
+                  <Typography.Title level={5}>
+                    Do zakończenia aukcji zostało
+                  </Typography.Title>
+                  <Countdown
+                    onFinish={() => setIsAuctionFinished(true)}
+                    finishDate={new Date(auction.completionDate)}
+                  />
+                </>
+              )}
+              {!isLoggedUserAuctionOwner && !isAuctionFinished && (
+                <>
+                  <Popconfirm
+                    title="Jesteś pewien?"
+                    icon={
+                      <QuestionCircleOutlined
+                        style={{
+                          color: 'blue',
+                        }}
+                      />
+                    }
+                    cancelText="Anuluj"
+                    okText="Potwierdź"
+                    onConfirm={handleConfirmPayment}
+                  >
+                    <StyledButtonsWrapper>
+                      <StyledButton type="primary">Kup teraz</StyledButton>
+                    </StyledButtonsWrapper>
+                  </Popconfirm>
+                  <StyledDivider />
+                </>
+              )}
+            </>
+          )}
 
-            <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
-            <Typography.Title style={{ marginTop: '19px' }} level={1}>
-              {auction.price} PLN
-            </Typography.Title>
+          {isAuctionType('default-auction') && (
+            <>
+              {auction.bids.length ? (
+                <>
+                  <Typography.Title level={5}>
+                    Najwyższa oferta
+                  </Typography.Title>
+                  <Paragraph style={{ marginBottom: 0 }}>
+                    {isLoggedUserWithHighestBid ? (
+                      'Ty'
+                    ) : (
+                      <>
+                        Od: {highestBid && highestBid.buyer.firstName}{' '}
+                        {highestBid && highestBid.buyer.lastName}
+                      </>
+                    )}
+                  </Paragraph>
+                  <Typography.Title style={{ marginTop: '19px' }} level={1}>
+                    {highestBid.value} PLN
+                  </Typography.Title>
+                </>
+              ) : (
+                'Brak ofert'
+              )}
 
-            <Typography.Title level={5}>
-              Do zakończenia aukcji zostało
-            </Typography.Title>
-            <Countdown finishDate={new Date(auction.completionDate)} />
-            {!isLoggedUserAuctionOwner && (
-              <>
-                <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
-                <Input
-                  addonAfter="PLN"
-                  value={bid.bidValue + auction.jumpToNextRise}
-                />
-                <StyledButtonsWrapper>
-                  <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
-                </StyledButtonsWrapper>
-              </>
-            )}
-          </>
-        )}
+              <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
+              <Typography.Title style={{ marginTop: '19px' }} level={1}>
+                {auction.price} PLN
+              </Typography.Title>
 
-        {isAuctionType('blind-auction') && (
-          <>
-            {auction.bids.length ? (
-              <>
-                <Typography.Title level={5}>Najwyższa oferta</Typography.Title>
-                <Paragraph style={{ marginBottom: 0 }}>
-                  {isLoggedUserWithHighestBid ? (
-                    ' Od: Ciebie'
-                  ) : (
-                    <>
-                      Od: {highestBid.buyer.firstName}{' '}
-                      {highestBid.buyer.lastName}}
-                    </>
-                  )}
-                </Paragraph>
-              </>
-            ) : (
-              'Brak ofert'
-            )}
-            <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
-            <Typography.Title style={{ marginTop: '19px' }} level={1}>
-              {auction.price} PLN
-            </Typography.Title>
-            <Typography.Title level={5}>
-              Do zakończenia aukcji zostało
-            </Typography.Title>
-            <Countdown finishDate={new Date(auction.completionDate)} />
-            {!isLoggedUserAuctionOwner && (
-              <>
-                <Paragraph style={{ marginBottom: 0 }}>Twoja oferta</Paragraph>
-                <Input addonAfter="PLN" value={0} />
-                <StyledButtonsWrapper>
-                  <StyledButton type="primary">DODAJ SWOJĄ OFERTĘ</StyledButton>
-                </StyledButtonsWrapper>
-              </>
-            )}
-          </>
-        )}
-
-        {isAuctionType('descending-auction') && (
-          <>
-            <Typography.Title level={5}>Aktualna Cena</Typography.Title>
-
-            <Typography.Title style={{ marginTop: '19px' }} level={1}>
-              {price} PLN
-            </Typography.Title>
-            <Typography.Title level={5}>
-              Do zakończenia aukcji zostało
-            </Typography.Title>
-            <Countdown finishDate={auction.completionDate} />
-            {auction.minimumPrice < price && (
-              <>
-                <Typography.Title level={5} style={{ marginTop: '10px' }}>
-                  {`Do obniżenia ceny o ${auction.priceDrop} PLN zostało`}
+              {isAuctionFinished ? (
+                <Typography.Title level={5}>
+                  Aukcja została ukończona
                 </Typography.Title>
-                <Countdown finishDate={calculateDescDateAndPrice()} />
-              </>
-            )}
-            {!isLoggedUserAuctionOwner && (
-              <>
+              ) : (
+                <>
+                  <Typography.Title level={5}>
+                    Do zakończenia aukcji zostało
+                  </Typography.Title>
+                  <Countdown
+                    onFinish={() => setIsAuctionFinished(true)}
+                    finishDate={new Date(auction.completionDate)}
+                  />
+                </>
+              )}
+              {!isLoggedUserAuctionOwner && !isAuctionFinished && (
+                <>
+                  <Paragraph style={{ marginBottom: 0 }}>
+                    Twoja oferta
+                  </Paragraph>
+                  <Form.Item name="bid" noStyle>
+                    <Input
+                      disabled={isLoggedUserWithHighestBid}
+                      addonAfter="PLN"
+                      value={
+                        highestBid
+                          ? highestBid.value + auction.jumpToNextRise
+                          : auction.price + auction.jumpToNextRise
+                      }
+                    />
+                  </Form.Item>
+                  <StyledButtonsWrapper>
+                    <StyledButton
+                      onClick={() => handleAddNewBid()}
+                      type="primary"
+                      disabled={isLoggedUserWithHighestBid}
+                    >
+                      DODAJ SWOJĄ OFERTĘ
+                    </StyledButton>
+                  </StyledButtonsWrapper>
+                </>
+              )}
+            </>
+          )}
+
+          {isAuctionType('blind-auction') && (
+            <>
+              {auction.bids.length ? (
+                <>
+                  <Typography.Title level={5}>
+                    Najwyższa oferta
+                  </Typography.Title>
+                  <Paragraph style={{ marginBottom: 0 }}>
+                    {isLoggedUserWithHighestBid ? (
+                      ' Od: Ciebie'
+                    ) : (
+                      <>
+                        Od: {highestBid.buyer.firstName}{' '}
+                        {highestBid.buyer.lastName}
+                      </>
+                    )}
+                  </Paragraph>
+                </>
+              ) : (
+                'Brak ofert'
+              )}
+              <Typography.Title level={5}>Cena wywoławcza</Typography.Title>
+              <Typography.Title style={{ marginTop: '19px' }} level={1}>
+                {auction.price} PLN
+              </Typography.Title>
+              {isAuctionFinished ? (
+                <Typography.Title level={5}>
+                  Aukcja została ukończona
+                </Typography.Title>
+              ) : (
+                <>
+                  <Typography.Title level={5}>
+                    Do zakończenia aukcji zostało
+                  </Typography.Title>
+                  <Countdown
+                    onFinish={() => setIsAuctionFinished(true)}
+                    finishDate={new Date(auction.completionDate)}
+                  />
+                </>
+              )}
+              {!isLoggedUserAuctionOwner && (
+                <>
+                  <Paragraph style={{ marginBottom: 0 }}>
+                    Twoja oferta
+                  </Paragraph>
+                  <Form.Item name="bid" noStyle>
+                    <Input
+                      disabled={isLoggedUserWithHighestBid}
+                      addonAfter="PLN"
+                      value={0}
+                    />
+                  </Form.Item>
+                  <StyledButtonsWrapper>
+                    <StyledButton
+                      disabled={isLoggedUserWithHighestBid}
+                      onClick={() => handleAddNewBid()}
+                      type="primary"
+                    >
+                      DODAJ SWOJĄ OFERTĘ
+                    </StyledButton>
+                  </StyledButtonsWrapper>
+                </>
+              )}
+            </>
+          )}
+
+          {isAuctionType('descending-auction') && (
+            <>
+              <Typography.Title level={5}>Aktualna Cena</Typography.Title>
+
+              <Typography.Title style={{ marginTop: '19px' }} level={1}>
+                {price} PLN
+              </Typography.Title>
+              {isAuctionFinished ? (
+                <Typography.Title level={5}>
+                  Aukcja została ukończona
+                </Typography.Title>
+              ) : (
+                <>
+                  <Typography.Title level={5}>
+                    Do zakończenia aukcji zostało
+                  </Typography.Title>
+                  <Countdown
+                    onFinish={() => setIsAuctionFinished(true)}
+                    finishDate={new Date(auction.completionDate)}
+                  />
+                </>
+              )}
+              {auction.minimumPrice < price && !isAuctionFinished && (
+                <>
+                  <Typography.Title level={5} style={{ marginTop: '10px' }}>
+                    {`Do obniżenia ceny o ${auction.priceDrop} PLN zostało`}
+                  </Typography.Title>
+                  <Countdown
+                    onFinish={() =>
+                      setDescendingCountdownDate(calculateDescDateAndPrice())
+                    }
+                    finishDate={descendingCountdownDate}
+                  />
+                </>
+              )}
+              {!isLoggedUserAuctionOwner &&
+                !isAuctionFinished &&
+                !isLoggedUserAuctionOwner && (
+                  <>
+                    <Popconfirm
+                      title="Jesteś pewien?"
+                      icon={
+                        <QuestionCircleOutlined
+                          style={{
+                            color: 'blue',
+                          }}
+                        />
+                      }
+                      cancelText="Anuluj"
+                      okText="Potwierdź"
+                      onConfirm={handleConfirmPayment}
+                    >
+                      <StyledButtonsWrapper>
+                        <StyledButton type="primary">KUP TERAZ</StyledButton>
+                      </StyledButtonsWrapper>
+                    </Popconfirm>
+                  </>
+                )}
+            </>
+          )}
+        </Form>
+
+        {(isAuctionType('blind-auction') || isAuctionType('default-auction')) &&
+          isAuctionFinished &&
+          isLoggedUserWithHighestBid &&
+          !isAuctionPaid &&
+          !isLoggedUserAuctionOwner && (
+            <>
+              <Popconfirm
+                title="Jesteś pewien?"
+                icon={
+                  <QuestionCircleOutlined
+                    style={{
+                      color: 'blue',
+                    }}
+                  />
+                }
+                cancelText="Anuluj"
+                okText="Potwierdź"
+                onConfirm={handleConfirmPayment}
+              >
                 <StyledButtonsWrapper>
-                  <StyledButton type="primary">KUP TERAZ</StyledButton>
+                  <StyledButton type="primary">Potwierdź zakup</StyledButton>
                 </StyledButtonsWrapper>
-              </>
-            )}
-          </>
-        )}
-        <Typography.Title level={5}>Opis</Typography.Title>
+              </Popconfirm>
+            </>
+          )}
+        <Typography.Title level={5} style={{ marginTop: '10px' }}>
+          Opis
+        </Typography.Title>
         <StyledDesription>{auction.product.description}</StyledDesription>
       </StyledContentWrapper>
     </StyledWrapper>
