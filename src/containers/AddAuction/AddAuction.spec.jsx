@@ -1,15 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import AddAuction from './AddAuction';
 
-global.matchMedia =
-  global.matchMedia ||
-  function () {
-    return {
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-    };
-  };
-
 describe('AddAuction component', () => {
   test('should Add auction main pane', () => {
     render(<AddAuction />);

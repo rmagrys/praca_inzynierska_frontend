@@ -1,15 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-global.matchMedia =
-  global.matchMedia ||
-  function () {
-    return {
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-    };
-  };
-
 describe('App component', () => {
   test('should render first page', () => {
     render(<App />);
