@@ -43,7 +43,12 @@ const LoginForm = () => {
         });
       } else {
         localStorage.setItem('token', response.data);
-        window.location.href = '/home';
+        notification.success({
+          message: 'Pomyślnie zalogowano',
+        });
+        setTimeout(() => {
+          window.location.href = '/home';
+        }, 500);
       }
     } catch (error) {
       console.log('something went wrong');
@@ -72,7 +77,7 @@ const LoginForm = () => {
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Nazwa użytkownika"
+            placeholder="E-mail"
           />
         </Form.Item>
         <Form.Item
@@ -87,17 +92,8 @@ const LoginForm = () => {
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
+            placeholder="Hasło"
           />
-        </Form.Item>
-        <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>Pamiętaj mnie</Checkbox>
-          </Form.Item>
-
-          <a className="login-form-forgot" href="">
-            Zapomniałem hasła
-          </a>
         </Form.Item>
 
         <Form.Item>

@@ -12,3 +12,5 @@ global.matchMedia =
       removeListener: jest.fn(),
     };
   };
+
+jest.mock('axios');

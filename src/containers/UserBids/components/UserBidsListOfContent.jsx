@@ -60,7 +60,6 @@ const HomePageListOfContent = ({ activeCategory, searchContext, sortType }) => {
     if (res.data.length) {
       setBids(
         res.data.map((bid, index) => {
-          console.log(`${S3config.AWS_S3_PATH}${bid.auction.pictures[0].url}`);
           return {
             sortIndex: index,
             title: bid.auction.product.name,
@@ -71,8 +70,11 @@ const HomePageListOfContent = ({ activeCategory, searchContext, sortType }) => {
             price: bid.auction.price,
             description: (
               <strong>
-                {/* {bid.auction.seller.firstName} {bid.auction.seller.lastName}{' '} */}
-                auction
+                Aukcja użytkownika:{' '}
+                {bid.auction.seller
+                  ? bid.auction.seller.firstName
+                  : 'Anonimowy'}{' '}
+                {bid.auction.seller ? bid.auction.seller.lastName : ''}
               </strong>
             ),
             content: (

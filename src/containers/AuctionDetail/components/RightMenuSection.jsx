@@ -84,6 +84,9 @@ const RightMenuSection = ({ auction, auctionType }) => {
   const [isAuctionPaid, setIsAuctionPaid] = useState(
     auction.payment ? true : false
   );
+  notification.success({
+    message: 'Pomyślnie dodano ofertę',
+  });
 
   const [form] = Form.useForm();
   const token = localStorage.getItem('token');
@@ -319,7 +322,7 @@ const RightMenuSection = ({ auction, auctionType }) => {
                   </Typography.Title>
                   <Paragraph style={{ marginBottom: 0 }}>
                     {isLoggedUserWithHighestBid ? (
-                      ' Od: Ciebie'
+                      `Od: Ciebie w wartości ${highestBid.value} PLN`
                     ) : (
                       <>
                         Od: {highestBid.buyer.firstName}{' '}

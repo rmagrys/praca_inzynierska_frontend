@@ -63,17 +63,15 @@ const AddAuction = () => {
 
     const { user } = parseJwt(localStorage.getItem('token'));
 
-    const response = await addNewAuction(user, body);
+    await addNewAuction(user, body);
 
     notification.success({
-      message: 'Pomyślnie dodano ofertę',
+      message: 'Pomyślnie dodano aukcję',
     });
 
     setTimeout(() => {
       window.location.href = '/home';
     }, 500);
-
-    console.log(response);
   };
 
   return (

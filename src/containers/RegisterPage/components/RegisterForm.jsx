@@ -9,8 +9,8 @@ import { getAuthToken } from '../../../api/auth';
 
 const StyledRegisterWrapper = styled.div`
   margin: 40px 20px;
-  height: 60vh;
-  min-width: 600px;
+  height: 70vh;
+  flex-basis: 45%;
   background-color: var(--ghostWhite);
   box-shadow: rgb(43 52 69 / 10%) 0px 4px 16px;
   border-radius: 10px;

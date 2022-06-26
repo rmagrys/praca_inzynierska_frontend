@@ -69,7 +69,8 @@ const HomePageListOfContent = ({
           price: auction.price,
           description: (
             <strong>
-              {auction.seller.firstName} {auction.seller.lastName} auction
+              Auckcja użytkownika: {auction.seller.firstName}{' '}
+              {auction.seller.lastName}
             </strong>
           ),
           content: (
