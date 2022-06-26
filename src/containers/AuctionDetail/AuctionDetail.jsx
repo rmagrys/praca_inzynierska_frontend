@@ -51,17 +51,6 @@ const AuctionDetail = () => {
 
   const isAuctionPaid = auction && auction.payment ? true : false;
 
-  console.log('isLoggedUserAuctionOwner', isLoggedUserAuctionOwner);
-  console.log('isAuctionFinished', isAuctionFinished);
-
-  useEffect(() => {
-    console.log(auction);
-  }, [auction]);
-
-  useEffect(() => {
-    console.log(auctionType);
-  }, [auctionType]);
-
   return (
     <StyledPageContainer>
       <StyledSpinner size="large" spinning={isFetching} tip="Ładowanie...">

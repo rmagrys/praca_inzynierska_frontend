@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  Radio,
   Typography,
   Button,
   Form,
@@ -84,9 +83,6 @@ const RightMenuSection = ({ auction, auctionType }) => {
   const [isAuctionPaid, setIsAuctionPaid] = useState(
     auction.payment ? true : false
   );
-  notification.success({
-    message: 'Pomyślnie dodano ofertę',
-  });
 
   const [form] = Form.useForm();
   const token = localStorage.getItem('token');
@@ -148,17 +144,24 @@ const RightMenuSection = ({ auction, auctionType }) => {
       setTimeout(() => {
         window.location.reload(true);
       }, 500);
-    } catch (error) {}
+      notification.success({
+        message: 'Pomyślnie potwierdzono płatność',
+      });
+    } catch (error) {
+      notification.error({
+        message: 'Wystąpił błąd',
+      });
+    }
   };
 
   const calculateDescDateAndPrice = () => {
     const now = new Date();
     const createdAt = new Date(auction.createdAt);
-    const diff = now.getTime() - createdAt.getTime();
-    const timesPriceChanged = diff / (auction.reducingTime * 1000);
+    const diffFromCreatedAt = now.getTime() - createdAt.getTime();
+    const timesPriceChanged = diffFromCreatedAt / (auction.reducingTime * 1000);
     const timeToChangePrice = timesPriceChanged - Math.floor(timesPriceChanged);
     const calculatedPriceDrop =
-      auction.price - Math.ceil(timesPriceChanged) * auction.priceDrop;
+      auction.price - Math.floor(timesPriceChanged) * auction.priceDrop;
 
     const finalPrice =
       auction.minimumPrice > calculatedPriceDrop
@@ -169,8 +172,25 @@ const RightMenuSection = ({ auction, auctionType }) => {
       setPrice(finalPrice);
     }
 
+    console.log('diff', diffFromCreatedAt / 1000);
+    console.log('reducingTime', auction.reducingTime);
+    console.log('timesPriceChanged', timesPriceChanged);
+    console.log('timeToChangePrice', timeToChangePrice);
+    console.log('timeToChangePrice', timeToChangePrice);
+    console.log(
+      'wynik w liczbie',
+      now.getTime() + auction.reducingTime * (1 - timeToChangePrice) * 1000
+    );
+
+    console.log(
+      'wynik',
+      Date(
+        now.getTime() + auction.reducingTime * (1 - timeToChangePrice) * 1000
+      )
+    );
+
     return new Date(
-      now.getTime() + auction.reducingTime * timeToChangePrice * 1000
+      now.getTime() + auction.reducingTime * (1 - timeToChangePrice) * 1000
     );
   };
 
