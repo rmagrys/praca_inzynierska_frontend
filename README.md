@@ -1,27 +1,25 @@
-## Running project
+#Praca inzynierska frontend
 
-Firstly you need to install Node.js and npm
+## Uruchomienie projektu
 
-In the project directory, you can run:
+Najpierw trzeba mieć zainstalowanego Node.js i npm
+
+Następnie w folderze projektu nalezy wywołać komendę
 
 ### `npm install`
 
-Installs all packages listed in package.json file
+instaluje ona wszystkie potrzebne biblioteki do uruchomienia projektu
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Uruchamia aplikację w trybie developera
+Otwórz [http://localhost:3000](http://localhost:3000) by zobaczyć w swojej przeglądarce.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Strona zostanie przeładowana po wprowadzeniu jakichkolwiek zmian.\
+Wszystkie błędy zostanie wyświetlone w konsoli.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Tworzy produkcyjną wersję aplikacji w folderze `build`.\
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Zobacz sekcję [deployment](https://facebook.github.io/create-react-app/docs/deployment) dla wiekszej ilości informacji.
